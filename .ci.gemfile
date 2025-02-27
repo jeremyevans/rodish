@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'rake'
 gem 'optparse'
 gem 'minitest'
 gem 'minitest-global_expectations'
