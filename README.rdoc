@@ -1,0 +1,257 @@
+= Rodish
+
+Rodish parses an argv array using a routing tree approach. It is
+designed to make it easy to implement command line applications
+that support multiple levels of subcommands, with options at each
+level.
+
+= Installation
+
+  gem install rodish
+
+= Source Code
+
+Source code is available on GitHub at https://github.com/jeremyevans/rodish
+
+= Simple Example
+
+Here's a simple commented example with a single subcommand:
+
+  require "rodish"
+
+  # This just creates a normal Ruby class.  For each argv parse, Rodish will
+  # create an instance of this class
+  class CliExample
+
+    # This allows instances of the class to be instantiated with or without
+    # a default person.
+    def initialize(default_person=nil)
+      @default_person = default_person
+    end
+
+    # This installs the Rodish processor into CliExample. It also extends the
+    # CliExample class with the Rodish::Processor module).  The block provided
+    # is evaluated in the context of a Rodish::DSL instance.
+    Rodish.processor(self) do
+
+      # This method call creates a hello subcommand of the current/root command.
+      # If the given argv is for the hello subcommand, the block will be
+      # executed in the context of the CliExample instance.
+      on "hello" do
+
+        # This adds a usage string and a -p options for the hello subcommand.
+        # The block passed is used to set the options via the optparse library.
+        options("cli-example hello [options]") do
+          on("-p", "--person=name", "say hello to specific person")
+        end
+
+        run do |opts|
+          "Hello #{opts[:person] || @default_person || 'World'}"
+        end
+      end
+    end
+  end
+
+  # This requests Rodish to process the provided argv.  Rodish will determine
+  # the related command block to execute and execute it.  The return value of
+  # that block will be returned to the caller.
+  CliExample.process(["hello"])
+  # => "Hello World"
+
+  # Additional arguments passed to .process are passed to .new.  In this
+  # example, this sets the default person.
+  CliExample.process(["hello"], "Adol")
+  # => "Hello Adol"
+
+  # This shows an example of passing an option to a subcommand, and using
+  # the option value when returning a response.
+  CliExample.process(["hello", "-p", "Feena"], "Adol")
+  # => "Hello Feena"
+
+= Rodish DSL
+
+Inside the <tt>Rodish.processor</tt> block, you are in the context of the root
+command. The following methods are available for configuring the processing of
+the command.
+
+== +on+
+
+The +on+ method adds a subcommand of the current command, and yields to the
+block to configure the subcommand.  All of the methods described in the Rodish
+DSL section can be executed inside the +on+ block, and arbitrary levels of
+subcommands are supported.
+
+== +options+
+
+The +options+ method sets up an options parser for the current command.  The
+default options parser disallows any options. Options are parsed into a hash,
+which is yielded to commands (as in the above example).
+
+This method requires a String argument for the usage for the current command.
+You can also provide a +key+ keyword argument, to put parsed options into
+a subhash of the main options hash, which can be useful when options are
+parsed at multiple levels.
+
+If a block is provided, it is executed in the context of a Rodish::OptionParser
+instance.  Rodish::OptionParser is a subclass of Ruby's standard OptionParser
+(from +optparse+), with a few additional methods.
+
+== +args+
+
+The +args+ method sets the number of arguments accepted when running the command.
+The default for +args+ is +0+. You can provide either an Integer to accept a
+fixed number of arguments, or a Range to allow any number of arguments in that
+range.
+
+The method also accepts an +invalid_args_message+ keyword argument for the
+message, to set the message to display if an invalid number of arguments is
+provided.
+
+== +run+
+
+The +run+ method sets the block to run for the current command.  If the
+command accepts a fixed number of arguments, those arguments are yielded
+as the first arguments to the command.  If the command accepts a range of
+argument numbers, then the remaining argv array will be passed as the
+first argument.
+
+The block will be passed two additional arguments, the options already
+parsed, and the current Rodish::Command object.
+
+== +is+
+
+The +is+ method is a shortcut for calling the +on+ method and +run+ method.
+For example:
+
+  is "hello" do
+    :world
+  end
+  
+is equivalent to:
+
+  on "hello" do
+    run do
+      :world
+    end
+  end
+
+The +is+ method also takes +args+ and +invalid_args_message+ keyword arguments.
+
+== +before+
+
+The +before+ method takes a block, and this block is executed before command
+or subcommand execution, in the same context that the +run+ block would be
+executed in.  It is passed the remaining argv array and the already parsed
+options.
+
+== +skip_option_parsing+
+
+The +skip_option_parsing+ method makes the command do no option parsing,
+treating all elements of the remaining argv as options.  It requires a
+usage string for the command, similar to +options+.
+
+== +run_on+
+
+The +run_on+ method is similar to +on+, except it creates a post subcommand
+instead of a normal subcommand.  Post subcommands allow the +run+ block
+to parse part of the remaining argv array, and then call a subcommand with
+the modified (or a new) argv array.  You dispatch to post subcommands
+inside the +run+ block by calling +run+ on the command argument:
+
+  on "hello" do
+    args(2...)
+
+    run do |argv, opts, command|
+      @name = argv.shift
+      command.run(self, opts, argv)
+    end
+
+    run_on "world" do
+      run do
+        "Hello #{@name.upcase} World!"
+      end
+    end
+  end
+
+  # process(%w[hello foo world])
+  # => "Hello FOO World!"
+
+== +run_is+
+
+The +run_is+ method operates similarly to +is+, but adds a post subcommand
+instead of a normal subcommand.
+
+== +post_options+
+
+The +post_options+ method sets an option parser that is used for post
+subcommands. This parses options from the argv array that passed to
++command.run+, before calling the related subcommand. Example:
+
+  on "hello" do
+    args(2...)
+
+    post_options("Usage: hello name [options] subcommand ...") do
+      on("-c", "--cap", "capitalize instead of uppercase")
+    end
+
+    run do |argv, opts, command|
+      @name = argv.shift
+      command.run(self, opts, argv)
+    end
+
+    run_is "world" do |opts|
+      name = opts[:cap] ? @name.capitalize :  @name.upcase
+      "Hello #{name} World!"
+    end
+  end
+
+  # process(%w[hello foo world])
+  # => "Hello FOO World!"
+  # process(%w[hello foo -c world])
+  # => "Hello Foo World!"
+
+== +autoload_subcommand_dir+
+
+The +autoload_subcommand_dir+ takes a directory, and will autoload
+subcommands from the given directory.  Filenames ending in +.rb+ in
+this directory will be treated as subcommands, and requiring the
+file should add the appropriate subcommand.
+
+This allows you to design complex command line programs where only
+the parts of the program needed to handle the given argv are loaded.
+
+== +autoload_post_subcommand_dir+
+
+The +autoload_post_subcommand_dir+ operates the same as
++autoload_subcommand_dir+, but it handles post subcommands instead of
+normal subcommands.
+
+= Examples
+
+The tests that ship with Rodish fully cover all of Rodish's functionality.
+
+If you would like to view a production example using Rodish, which
+uses most of Rodish's features, please see UbiCli, which is part of
+Ubicloud:
+
+* Main class: https://github.com/ubicloud/ubicloud/blob/main/lib/ubi_cli.rb
+* Commands (separate command per file): https://github.com/ubicloud/ubicloud/tree/main/cli-commands
+
+= History
+
+Rodish was extracted from Ubicloud (https://github.com/ubicloud/ubicloud),
+and is the argv processor used in Ubicloud's command line interface.
+
+= Naming
+
+The name Rodish was chosen because Rodish uses an API similar (-ish) to the Roda
+web framework (http://roda.jeremyevans.net), and the library is designed for
+use in applications executed from a shell (sh).
+
+= License
+
+MIT
+
+= Author
+
+Jeremy Evans <code@jeremyevans.net>
