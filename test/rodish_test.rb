@@ -124,6 +124,20 @@ require 'minitest/global_expectations/autorun'
 
           args(0...)
 
+          on "m" do
+            after_options do
+              push [:m, :after_options]
+            end
+
+            before do
+              push [:mb, :before]
+            end
+
+            is "n" do
+              push :n
+            end
+          end
+
           run do |argv|
             push [:l, argv]
           end
@@ -336,6 +350,10 @@ require 'minitest/global_expectations/autorun'
         res.must_equal [:top]
         proc{app.process(%w[d 1 2])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for d subcommand (accepts: 1, given: 2)")
         res.must_equal [:top]
+        proc{app.process(%w[l m])}.must_raise(Rodish::CommandFailure, "no subcommand provided")
+        res.must_equal [:top, [:m, :after_options]]
+        proc{app.process(%w[l m n 1])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for l m n subcommand (accepts: 0, given: 1)")
+        res.must_equal [:top, [:m, :after_options], [:mb, :before]]
       end
 
       it "raises CommandFailure for missing subcommand" do
