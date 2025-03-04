@@ -184,7 +184,7 @@ require 'minitest/global_expectations/autorun'
     end
 
     it "handles invalid subcommands dispatched to during run" do
-      proc{app.process(%w[g 1 l])}.must_raise(Rodish::CommandFailure, "invalid post subcommand: l")
+      proc{app.process(%w[g 1 l])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid post subcommand: l")
     end
 
     it "handles options at any level they are defined" do
@@ -194,20 +194,20 @@ require 'minitest/global_expectations/autorun'
 
     it "raises CommandFailure when there a command has no command block or subcommands" do
       app = Rodish.processor(Class.new) {}
-      proc{app.process([])}.must_raise(Rodish::CommandFailure, "program bug, no run block or subcommands defined for command")
+      proc{app.process([])}.must_raise(Rodish::CommandFailure).message.must_equal("program bug, no run block or subcommands defined for command")
       app = Rodish.processor(Class.new) do
         on("f") {}
       end
-      proc{app.process(%w[f])}.must_raise(Rodish::CommandFailure, "program bug, no run block or subcommands defined for f subcommand")
+      proc{app.process(%w[f])}.must_raise(Rodish::CommandFailure).message.must_equal("program bug, no run block or subcommands defined for f subcommand")
     end
 
     it "raises CommandFailure for unexpected post options" do
-      proc{app.process(%w[g 1 -b h])}.must_raise(Rodish::CommandFailure, "invalid option: -b")
+      proc{app.process(%w[g 1 -b h])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -b")
     end
 
     it "raises CommandExit for blocks that use halt" do
-      proc{app.process(%w[--version])}.must_raise(Rodish::CommandExit, "0.0.0")
-      proc{app.process(%w[--help])}.must_raise(Rodish::CommandExit, <<~USAGE)
+      proc{app.process(%w[--version])}.must_raise(Rodish::CommandExit).message.must_equal("0.0.0")
+      proc{app.process(%w[--help])}.must_raise(Rodish::CommandExit).message.must_equal(<<~USAGE)
         Usage: example [options] [subcommand [subcommand_options] [...]]
 
         Options:
@@ -334,56 +334,56 @@ require 'minitest/global_expectations/autorun'
       end
 
       it "raises CommandFailure for unexpected number of arguments without executing code" do
-        proc{app.process(%w[6])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for command (accepts: 0, given: 1)")
+        proc{app.process(%w[6])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for command (accepts: 0, given: 1)")
         res.must_be_empty
-        proc{app.process(%w[a b])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for a b subcommand (accepts: 1..., given: 0)")
+        proc{app.process(%w[a b])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for a b subcommand (accepts: 1..., given: 0)")
         res.must_equal [:top, :before_a]
-        proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure, "invalid arguments for a subcommand (accepts: x y)")
+        proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
         res.must_equal [:top]
-        proc{app.process(%w[a 1])}.must_raise(Rodish::CommandFailure, "invalid arguments for a subcommand (accepts: x y)")
+        proc{app.process(%w[a 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
         res.must_equal [:top]
-        proc{app.process(%w[a 1 2 3])}.must_raise(Rodish::CommandFailure, "invalid arguments for a subcommand (accepts: x y)")
+        proc{app.process(%w[a 1 2 3])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
         res.must_equal [:top]
-        proc{app.process(%w[c 1])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for c subcommand (accepts: 0, given: 1)")
+        proc{app.process(%w[c 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for c subcommand (accepts: 0, given: 1)")
         res.must_equal [:top]
-        proc{app.process(%w[d])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for d subcommand (accepts: 1, given: 0)")
+        proc{app.process(%w[d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (accepts: 1, given: 0)")
         res.must_equal [:top]
-        proc{app.process(%w[d 1 2])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for d subcommand (accepts: 1, given: 2)")
+        proc{app.process(%w[d 1 2])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (accepts: 1, given: 2)")
         res.must_equal [:top]
-        proc{app.process(%w[l m])}.must_raise(Rodish::CommandFailure, "no subcommand provided")
+        proc{app.process(%w[l m])}.must_raise(Rodish::CommandFailure).message.must_equal("no subcommand provided")
         res.must_equal [:top, [:m, :after_options]]
-        proc{app.process(%w[l m n 1])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for l m n subcommand (accepts: 0, given: 1)")
+        proc{app.process(%w[l m n 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for l m n subcommand (accepts: 0, given: 1)")
         res.must_equal [:top, [:m, :after_options], [:mb, :before]]
       end
 
       it "raises CommandFailure for missing subcommand" do
-        proc{app.process(%w[e])}.must_raise(Rodish::CommandFailure, "no subcommand provided")
+        proc{app.process(%w[e])}.must_raise(Rodish::CommandFailure).message.must_equal("no subcommand provided")
         res.must_equal [:top]
       end
 
       it "raises CommandFailure for invalid subcommand" do
-        proc{app.process(%w[e g])}.must_raise(Rodish::CommandFailure, "invalid subcommand: g")
+        proc{app.process(%w[e g])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid subcommand: g")
         res.must_equal [:top]
 
         app = Rodish.processor(Class.new) do
           on("f") {}
         end
-        proc{app.process(%w[g])}.must_raise(Rodish::CommandFailure, "invalid subcommand: g")
+        proc{app.process(%w[g])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid subcommand: g")
       end
 
       it "raises CommandFailure for unexpected options" do
-        proc{app.process(%w[-d])}.must_raise(Rodish::CommandFailure, "invalid option: -d")
+        proc{app.process(%w[-d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -d")
         res.must_be_empty
-        proc{app.process(%w[a -d])}.must_raise(Rodish::CommandFailure, "invalid option: -d")
+        proc{app.process(%w[a -d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -d")
         res.must_equal [:top]
-        proc{app.process(%w[a b -d])}.must_raise(Rodish::CommandFailure, "invalid option: -d")
+        proc{app.process(%w[a b -d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -d")
         res.must_equal [:top, :before_a]
-        proc{app.process(%w[d -d 1 2])}.must_raise(Rodish::CommandFailure, "invalid option: -d")
+        proc{app.process(%w[d -d 1 2])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -d")
         res.must_equal [:top]
       end
 
       it "supports adding subcommands after initialization" do
-        proc{app.process(%w[z])}.must_raise(Rodish::CommandFailure, "invalid number of arguments for command (accepts: 0, given: 1)")
+        proc{app.process(%w[z])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for command (accepts: 0, given: 1)")
         res.must_be_empty
 
         app.on("z") do
@@ -430,7 +430,7 @@ require 'minitest/global_expectations/autorun'
         app.process(%w[k 1 o])
         res.must_equal [:top, [:k, "1"], :o]
 
-        proc{app.process(%w[k n])}.must_raise(Rodish::CommandFailure, "program bug, autoload of subcommand n failed")
+        proc{app.process(%w[k n])}.must_raise(Rodish::CommandFailure).message.must_equal("program bug, autoload of subcommand n failed")
       ensure
         main.remove_instance_variable(:@ExampleRodish)
       end
