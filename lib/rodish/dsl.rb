@@ -2,7 +2,6 @@
 
 require_relative "command"
 require_relative "option_parser"
-require_relative "skip_option_parser"
 
 module Rodish
   # The Rodish::DSL class implements Rodish's DSL.  Blocks
@@ -27,6 +26,21 @@ module Rodish
       @command = command
     end
 
+    # Set the description for the command.
+    def desc(description)
+      @command.desc = description
+    end
+
+    # Set the banner for the command execution and subcommand usage.
+    def banner(banner)
+      @command.banner = banner
+    end
+
+    # Set the banner for post subcommand usage.
+    def post_banner(banner)
+      @command.post_banner = banner
+    end
+
     # Skip option parsing for the command.  This is different
     # then the default option parsing, which will error if any
     # options are given.  A banner must be provided, setting
@@ -36,7 +50,8 @@ module Rodish
     # the entire remaining argv as the argv to another
     # program.
     def skip_option_parsing(banner)
-      @command.option_parser = SkipOptionParser.new(banner)
+      @command.banner = banner
+      @command.option_parser = :skip
     end
 
     # Set the option parser for the command to based on the
@@ -49,20 +64,19 @@ module Rodish
     #
     # If +key+ is given, parsed options
     # will be placed in a subhash using that key.
-    #
-    # The block is optional, allowing you to set a usage banner for
-    # commands without allowing any options.
     def options(banner, key: nil, &block)
+      @command.banner = banner
       @command.option_key = key
-      @command.option_parser = create_option_parser(banner, @command.subcommands, &block)
+      @command.option_parser = create_option_parser(&block)
     end
 
     # Similar to +options+, but sets the option parser for post
     # subcommands.  This option parser is only used when the
     # command is executed and chooses to run a post subcommand.
     def post_options(banner, key: nil, &block)
+      @command.post_banner = banner
       @command.post_option_key = key
-      @command.post_option_parser = create_option_parser(banner, @command.post_subcommands, &block)
+      @command.post_option_parser = create_option_parser(&block)
     end
 
     # Sets the after_options block.  This block is executed in the same
@@ -182,15 +196,10 @@ module Rodish
     end
 
     # Internals of +options+ and +post_options+.
-    def create_option_parser(banner, subcommands, &block)
+    def create_option_parser(&block)
       option_parser = OptionParser.new
-      option_parser.set_banner("Usage: #{banner}")
-      if block
-        option_parser.separator ""
-        option_parser.separator "Options:"
-        option_parser.instance_exec(&block)
-      end
-      option_parser.subcommands = subcommands
+      option_parser.banner = "" # Avoids issues when parser is frozen
+      option_parser.instance_exec(&block)
       option_parser
     end
   end

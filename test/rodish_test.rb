@@ -27,7 +27,7 @@ require 'minitest/global_expectations/autorun'
         options "example [options] [subcommand [subcommand_options] [...]]" do
           on("-v", "top verbose output")
           on("--version", "show program version") { halt "0.0.0" }
-          on("--help", "show program help") { halt to_s }
+          on("--help", "show program help") { halt c.command.help }
         end
 
         before do
@@ -208,14 +208,21 @@ require 'minitest/global_expectations/autorun'
     it "raises CommandExit for blocks that use halt" do
       proc{app.process(%w[--version])}.must_raise(Rodish::CommandExit).message.must_equal("0.0.0")
       proc{app.process(%w[--help])}.must_raise(Rodish::CommandExit).message.must_equal(<<~USAGE)
-        Usage: example [options] [subcommand [subcommand_options] [...]]
+        Usage:
+            example [options] [subcommand [subcommand_options] [...]]
+
+        Commands:
+            a    
+            c    
+            d    
+            e    
+            g    
+            l    
 
         Options:
             -v                               top verbose output
                 --version                    show program version
                 --help                       show program help
-
-        Subcommands: a c d e g l
       USAGE
     end
 
@@ -246,14 +253,21 @@ require 'minitest/global_expectations/autorun'
       e.message_with_usage.must_equal <<~USAGE
         invalid option: --bad
 
-        Usage: example [options] [subcommand [subcommand_options] [...]]
+        Usage:
+            example [options] [subcommand [subcommand_options] [...]]
+
+        Commands:
+            a    
+            c    
+            d    
+            e    
+            g    
+            l    
 
         Options:
             -v                               top verbose output
                 --version                    show program version
                 --help                       show program help
-
-        Subcommands: a c d e g l
       USAGE
     end
 
@@ -277,50 +291,85 @@ require 'minitest/global_expectations/autorun'
       app.command.subcommand("g").post_subcommand("h").command_path.must_equal %w"g h"
     end
 
-    it "#has_options_text returns nil if there are no option parsers for the command" do
-      app.command.subcommand("d").options_text.must_be_nil
-    end
-
     it "can get usages for all options" do
       usages = app.usages
-      usages.length.must_equal 5
+      usages.keys.sort.must_equal [
+        "",
+        "a",
+        "a b",
+        "c",
+        "d",
+        "e",
+        "e f",
+        "g",
+        "g h",
+        "g i",
+        "g i k",
+        "g j",
+        "l",
+        "l m",
+        "l m n"
+      ]
+
       usages[""].must_equal <<~USAGE
-        Usage: example [options] [subcommand [subcommand_options] [...]]
+        Usage:
+            example [options] [subcommand [subcommand_options] [...]]
+
+        Commands:
+            a    
+            c    
+            d    
+            e    
+            g    
+            l    
 
         Options:
             -v                               top verbose output
                 --version                    show program version
                 --help                       show program help
-
-        Subcommands: a c d e g l
       USAGE
       usages["a"].must_equal <<~USAGE
-        Usage: example a [options] [subcommand [subcommand_options] [...]]
+        Usage:
+            example a [options] [subcommand [subcommand_options] [...]]
+
+        Commands:
+            b    
 
         Options:
             -v                               a verbose output
-
-        Subcommands: b
       USAGE
       usages["a b"].must_equal <<~USAGE
-        Usage: example a b [options] arg [...]
+        Usage:
+            example a b [options] arg [...]
 
         Options:
             -v                               b verbose output
       USAGE
       usages["g"].must_equal <<~USAGE
-        Usage: example g arg [options] [subcommand [subcommand_options] [...]]
+        Usage:
+            example g arg [options] [subcommand [subcommand_options] [...]]
 
-        Options:
+        Commands:
+            j    
+
+        Post Commands:
+            h    
+            i    
+
+        Post Options:
             -v                               g verbose output
             -k, --key=foo                    set key
         Foo: bar baz quux
              options subcommand
              subcommand_options
-
-        Subcommands: h i
       USAGE
-      usages["l"].must_equal "Usage: example l\n"
+      usages["l"].must_equal <<~USAGE
+        Usage:
+            example l
+
+        Commands:
+            m    
+      USAGE
     end
 
     next if frozen
@@ -382,6 +431,10 @@ require 'minitest/global_expectations/autorun'
         res.must_equal [:top]
       end
 
+      it "CommandFailure#message_with_usage handles cases where no command is present" do
+        proc{raise Rodish::CommandFailure, "foo"}.must_raise(Rodish::CommandFailure).message_with_usage.must_equal("foo")
+      end
+
       it "supports adding subcommands after initialization" do
         proc{app.process(%w[z])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for command (accepts: 0, given: 1)")
         res.must_be_empty
@@ -436,25 +489,42 @@ require 'minitest/global_expectations/autorun'
       end
     end
 
-    it "uses separate lines for more than 6 subcommands" do
+    it "includes command descriptions in output if present" do
       subcommands = %w[a b c d e f g]
       app.on("z") do
-        options "example z subcommand"
+        desc "Trivial Example"
+        banner "example z command"
+        post_banner "example z arg post-command"
         subcommands.each do |cmd|
           is(cmd) {}
         end
-      end
-      app.command.subcommand("z").options_text.must_equal <<~USAGE
-        Usage: example z subcommand
+        on("d") do
+          desc "D-DESC"
+        end
 
-        Subcommands:
-          a
-          b
-          c
-          d
-          e
-          f
-          g
+        run_on("h1") do
+          desc "H1-DESC"
+          run{}
+        end
+      end
+      app.command.subcommand("z").help.must_equal <<~USAGE
+        Trivial Example
+
+        Usage:
+            example z command
+            example z arg post-command
+
+        Commands:
+            a     
+            b     
+            c     
+            d     D-DESC
+            e     
+            f     
+            g     
+
+        Post Commands:
+            h1    H1-DESC
       USAGE
     end
   end

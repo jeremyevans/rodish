@@ -26,9 +26,10 @@ module Rodish
   # * Invalid subcommands
   # * No subcommand given for a command that only supports subcommands
   class CommandFailure < CommandExit
-    def initialize(message, option_parsers = [])
-      option_parsers = [option_parsers] unless option_parsers.is_a?(Array)
-      @option_parsers = option_parsers.compact
+    attr_reader :command
+
+    def initialize(message, command=nil)
+      @command = command
       super(message)
     end
 
@@ -41,10 +42,11 @@ module Rodish
     # parsers.  This can be used to show usage an options along with
     # error messages for failing commands.
     def message_with_usage
-      if @option_parsers.empty?
+      help = @command&.help || ''
+      if help.empty?
         message
       else
-        "#{message}\n\n#{@option_parsers.join("\n\n")}"
+        "#{message}\n\n#{help}"
       end
     end
   end

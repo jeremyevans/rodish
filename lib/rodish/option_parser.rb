@@ -7,27 +7,9 @@ module Rodish
   # Rodish::OptionPaser is a subclass of Ruby's standard OptionParser
   # (from the optparse library).
   class OptionParser < ::OptionParser
-    # A hash of subcommands for the option parser.  If not empty,
-    # shows available subcommands when showing options.
-    attr_accessor :subcommands
-
     # Don't add officious, which includes options that call exit.
     # With Rodish, there are no secret options, only options you define.
     def add_officious
-    end
-
-    # Add the available subcommands to the returned string if there are
-    # any subcommands.
-    def to_s
-      string = super
-
-      if subcommands.length > 6
-        string += "\nSubcommands:\n  #{subcommands.keys.sort.join("\n  ")}\n"
-      elsif !subcommands.empty?
-        string += "\nSubcommands: #{subcommands.keys.sort.join(" ")}\n"
-      end
-
-      string
     end
 
     # Helper method that takes an array of values, wraps them to the given

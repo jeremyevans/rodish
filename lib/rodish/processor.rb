@@ -16,8 +16,6 @@ module Rodish
       # Deliberately do not pass a block here, to reserve
       # block handling for future use.
       @command.process(new(*a, **kw), {}, argv)
-    rescue ::OptionParser::InvalidOption => e
-      @command.raise_failure(e.message)
     end
 
     # Without a block, returns the Command instance for related subcommand
@@ -49,15 +47,12 @@ module Rodish
 
     # Return a hash of usage strings for the root command and all subcommands,
     # recursively.  The hash has string keys for the command name, and
-    # string values for the option parser(s) for the command.
+    # string values for the help for the command.
     def usages
       usages = {}
 
       command.each_subcommand do |names, command|
-        option_parsers = command.option_parsers
-        unless option_parsers.empty?
-          usages[names.join(" ")] = command.option_parsers.join("\n\n")
-        end
+        usages[names.join(" ")] = command.help
       end
 
       usages

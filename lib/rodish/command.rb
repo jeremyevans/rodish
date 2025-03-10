@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "option_parser"
-require_relative "skip_option_parser"
 require_relative "errors"
 
 module Rodish
@@ -73,6 +72,15 @@ module Rodish
     # arguments is provided.
     attr_accessor :invalid_args_message
 
+    # A description for the command
+    attr_accessor :desc
+
+    # A usage banner for the command or subcommands.
+    attr_accessor :banner
+
+    # A usage banner for any post subcommands.
+    attr_accessor :post_banner
+
     def initialize(command_path)
       @command_path = command_path
       @command_name = command_path.join(" ").freeze
@@ -90,7 +98,59 @@ module Rodish
       @post_subcommands.freeze
       @option_parser.freeze
       @post_option_parser.freeze
+      @help = help.freeze
       super
+    end
+
+    # Return a help string for the command
+    def help
+      return @help if @help
+
+      output = []
+
+      if desc
+        output << desc << ""
+      end
+
+      if banner || post_banner
+        output << "Usage:"
+        each_banner do |banner|
+          output << "    #{banner}"
+        end
+        output << ""
+      end
+
+      name_len = 0
+      each_local_subcommand do |name|
+        len = name.length
+        name_len = len if len > name_len
+      end
+
+      {
+        "Commands:" => @subcommands,
+        "Post Commands:" => @post_subcommands
+      }.each do |heading, hash|
+        next if hash.empty?
+        output << heading
+        command_output = []
+        _each_local_subcommand(hash) do |name, command|
+          command_output << "    #{name.ljust(name_len)}    #{command.desc}" 
+        end
+        command_output.sort!
+        output.concat(command_output)
+        output << ""
+      end
+
+      {
+        "Options:" => @option_parser,
+        "Post Options:" => @post_option_parser
+      }.each do |heading, parser|
+        next if parser.nil? || parser == :skip
+        output << heading
+        output << parser.summarize(String.new)
+      end
+
+      output.join("\n")
     end
 
     # Run a post subcommand using the given context (generally self),
@@ -105,14 +165,14 @@ module Rodish
       begin
         process_options(argv, options, @post_option_key, @post_option_parser)
       rescue ::OptionParser::InvalidOption => e
-        raise CommandFailure.new(e.message, @post_option_parser)
+        raise CommandFailure.new(e.message, self)
       end
 
       arg = argv[0]
       if arg && @post_subcommands[arg]
         process_subcommand(@post_subcommands, context, options, argv)
       else
-        process_command_failure(arg, @post_subcommands, @post_option_parser, "post ")
+        process_command_failure(arg, @post_subcommands, "post ")
       end
     end
     alias run_post_subcommand run
@@ -143,14 +203,10 @@ module Rodish
           raise_failure("invalid number of arguments#{subcommand_name} (accepts: #{@num_args}, given: #{argv.length})")
         end
       else
-        process_command_failure(arg, @subcommands, @option_parser, "")
+        process_command_failure(arg, @subcommands, "")
       end
     rescue ::OptionParser::InvalidOption => e
-      if @option_parser || @post_option_parser
-        raise_failure(e.message)
-      else
-        raise
-      end
+      raise_failure(e.message)
     end
 
     # This yields the current command and all subcommands and
@@ -161,18 +217,17 @@ module Rodish
       _each_subcommand(names, @post_subcommands, &block)
     end
 
-    # Raise a CommandFailure with the given error and the given
-    # option parsers.
-    def raise_failure(message, option_parsers = self.option_parsers)
-      raise CommandFailure.new(message, option_parsers)
+    # Yield each banner string (if any) to the block.
+    def each_banner
+      yield banner if banner
+      yield post_banner if post_banner
+      nil
     end
 
-    # Returns a string of options text for the command's option parsers.
-    def options_text
-      option_parsers = self.option_parsers
-      unless option_parsers.empty?
-        _options_text(option_parsers)
-      end
+    # Raise a CommandFailure with the given error and the given
+    # option parsers.
+    def raise_failure(message)
+      raise CommandFailure.new(message, self)
     end
 
     # Returns a Command instance for the named subcommand.
@@ -187,13 +242,21 @@ module Rodish
       _subcommand(@post_subcommands, name)
     end
 
-    # An array of option parsers for the command.  May be empty
-    # if the command has no option parsers.
-    def option_parsers
-      [@option_parser, @post_option_parser].compact
+    private
+
+    # Yield each local subcommand to the block.  This does not
+    # yield the current command or nested subcommands.
+    def each_local_subcommand(&block)
+      _each_local_subcommand(@subcommands, &block)
+      _each_local_subcommand(@post_subcommands, &block)
     end
 
-    private
+    # Internals of each_local_subcommand.
+    def _each_local_subcommand(subcommands)
+      subcommands.each_key do |name|
+        yield name, _subcommand(subcommands, name)
+      end
+    end
 
     # Yield to the block for each subcommand in the given
     # subcommands.  Internals of #each_subcommand.
@@ -220,19 +283,14 @@ module Rodish
       subcommand
     end
 
-    # Return a string containing all option parser text.
-    def _options_text(option_parsers)
-      option_parsers.join("\n\n")
-    end
-
     # Handle command failures for both subcommands and post subcommands.
-    def process_command_failure(arg, subcommands, option_parser, prefix)
+    def process_command_failure(arg, subcommands, prefix)
       if subcommands.empty?
         raise ProgramBug, "program bug, no run block or #{prefix}subcommands defined#{subcommand_name}"
       elsif arg
-        raise_failure("invalid #{prefix}subcommand: #{arg}", option_parser)
+        raise_failure("invalid #{prefix}subcommand: #{arg}")
       else
-        raise_failure("no #{prefix}subcommand provided", option_parser)
+        raise_failure("no #{prefix}subcommand provided")
       end
     end
 
@@ -241,7 +299,7 @@ module Rodish
     # Otherwise, parsed options placed directly into options.
     def process_options(argv, options, option_key, option_parser)
       case option_parser
-      when SkipOptionParser
+      when :skip
         # do nothing
       when nil
         DEFAULT_OPTION_PARSER.order!(argv)

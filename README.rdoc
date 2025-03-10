@@ -34,10 +34,16 @@ Here's a simple commented example with a single subcommand:
     # is evaluated in the context of a Rodish::DSL instance.
     Rodish.processor(self) do
 
+      # Provide description for root command
+      desc "Example Hello World CLI"
+
       # This method call creates a hello subcommand of the current/root command.
       # If the given argv is for the hello subcommand, the block will be
       # executed in the context of the CliExample instance.
       on "hello" do
+
+        # Provide description for this subcommand
+        desc "Says hello to person or world"
 
         # This adds a usage string and a -p options for the hello subcommand.
         # The block passed is used to set the options via the optparse library.
@@ -81,6 +87,11 @@ block to configure the subcommand.  All of the methods described in the Rodish
 DSL section can be executed inside the +on+ block, and arbitrary levels of
 subcommands are supported.
 
+== +desc+
+
+Provides a description for the command.  This description will show up in the
+help output for the command.
+
 == +options+
 
 The +options+ method sets up an options parser for the current command.  The
@@ -92,9 +103,13 @@ You can also provide a +key+ keyword argument, to put parsed options into
 a subhash of the main options hash, which can be useful when options are
 parsed at multiple levels.
 
-If a block is provided, it is executed in the context of a Rodish::OptionParser
+A block must be provided, which is executed in the context of a Rodish::OptionParser
 instance.  Rodish::OptionParser is a subclass of Ruby's standard OptionParser
 (from +optparse+), with a few additional methods.
+
+== +banner+
+
+Set the usage banner for the command, without allowing options for the command.
 
 == +args+
 
@@ -217,6 +232,11 @@ subcommands. This parses options from the argv array that passed to
   # => "Hello FOO World!"
   # process(%w[hello foo -c world])
   # => "Hello Foo World!"
+
+== +post_banner+
+
+Set the usage banner for using post subcommands with the command,
+without allowing post options for the command.
 
 == +autoload_subcommand_dir+
 
