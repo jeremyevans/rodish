@@ -71,7 +71,7 @@ module Rodish
     def dsl(command_names)
       command = self.command
       command_names.each do |name|
-        command = command.subcommands.fetch(name)
+        command = command.subcommand(name)
       end
       DSL.new(command)
     end
