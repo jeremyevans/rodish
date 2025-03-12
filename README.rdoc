@@ -315,6 +315,7 @@ See plugins that ship with Rodish for an example of how to create a plugin.
 
 The following plugins ship with Rodish:
 
+default_help_order :: Support overriding order of help sections for all commands.
 help_examples :: Allow including example help output with command usage.
 usages :: Get a hash with help output for all commands/subcommands for the processor.
 

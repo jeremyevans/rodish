@@ -344,6 +344,17 @@ require 'minitest/global_expectations/autorun'
       USAGE
     end
 
+    it "supports default_help_order plugin to set the order of help sections for all commands" do
+      app.plugin :default_help_order, [:options, :commands]
+      app.command.subcommand("a").help.must_equal <<~USAGE
+        Options:
+            -v                               a verbose output
+
+        Commands:
+            b    
+      USAGE
+    end
+
     it "usages plugin allows getting usages for all options" do
       app.plugin :usages
       usages = app.usages
