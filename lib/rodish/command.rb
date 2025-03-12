@@ -73,6 +73,9 @@ module Rodish
     # A usage banner for any post subcommands.
     attr_accessor :post_banner
 
+    # The order of sections in returned help.
+    attr_accessor :help_order
+
     def initialize(command_path)
       @command_path = command_path
       @command_name = command_path.join(" ").freeze
@@ -99,49 +102,9 @@ module Rodish
       return @help if @help
 
       output = []
-
-      if desc
-        output << desc << ""
+      (help_order || default_help_order).each do |type|
+        send(:"_help_#{type}", output)
       end
-
-      if banner || post_banner
-        output << "Usage:"
-        each_banner do |banner|
-          output << "    #{banner}"
-        end
-        output << ""
-      end
-
-      name_len = 0
-      each_local_subcommand do |name|
-        len = name.length
-        name_len = len if len > name_len
-      end
-
-      {
-        "Commands:" => @subcommands,
-        "Post Commands:" => @post_subcommands
-      }.each do |heading, hash|
-        next if hash.empty?
-        output << heading
-        command_output = []
-        _each_local_subcommand(hash) do |name, command|
-          command_output << "    #{name.ljust(name_len)}    #{command.desc}" 
-        end
-        command_output.sort!
-        output.concat(command_output)
-        output << ""
-      end
-
-      {
-        "Options:" => @option_parser,
-        "Post Options:" => @post_option_parser
-      }.each do |heading, parser|
-        next if parser.nil? || parser == :skip
-        output << heading
-        output << parser.summarize(String.new)
-      end
-
       output.join("\n")
     end
 
@@ -235,6 +198,65 @@ module Rodish
     end
 
     private
+
+    # The default order of help sections
+    def default_help_order
+      [:desc, :banner, :commands, :options]
+    end
+
+    # Add description to help output.
+    def _help_desc(output)
+      if desc
+        output << desc << ""
+      end
+    end
+
+    # Add banner to help output.
+    def _help_banner(output)
+      if banner || post_banner
+        output << "Usage:"
+        each_banner do |banner|
+          output << "    #{banner}"
+        end
+        output << ""
+      end
+    end
+
+    # Add commands to help output.
+    def _help_commands(output)
+      name_len = 0
+      each_local_subcommand do |name|
+        len = name.length
+        name_len = len if len > name_len
+      end
+
+      {
+        "Commands:" => @subcommands,
+        "Post Commands:" => @post_subcommands
+      }.each do |heading, hash|
+        next if hash.empty?
+        output << heading
+        command_output = []
+        _each_local_subcommand(hash) do |name, command|
+          command_output << "    #{name.ljust(name_len)}    #{command.desc}" 
+        end
+        command_output.sort!
+        output.concat(command_output)
+        output << ""
+      end
+    end
+
+    # Add options to help output.
+    def _help_options(output)
+      {
+        "Options:" => @option_parser,
+        "Post Options:" => @post_option_parser
+      }.each do |heading, parser|
+        next if parser.nil? || parser == :skip
+        output << heading
+        output << parser.summarize(String.new)
+      end
+    end
 
     # Yield each local subcommand to the block.  This does not
     # yield the current command or nested subcommands.

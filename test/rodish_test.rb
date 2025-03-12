@@ -293,6 +293,17 @@ require 'minitest/global_expectations/autorun'
 
     next if frozen
 
+    it "supports help_order to set the order of help sections" do
+      app.on("a").help_order(:options, :commands)
+      app.command.subcommand("a").help.must_equal <<~USAGE
+        Options:
+            -v                               a verbose output
+
+        Commands:
+            b    
+      USAGE
+    end
+
     it "usages plugin allows getting usages for all options" do
       app.plugin :usages
       usages = app.usages

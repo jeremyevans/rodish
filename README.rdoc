@@ -176,6 +176,15 @@ The +skip_option_parsing+ method makes the command do no option parsing,
 treating all elements of the remaining argv as options.  It requires a
 usage string for the command, similar to +options+.
 
+== +help_order+
+
+The +help_order+ method configures the order of help sections.  By default,
+the order is:
+
+  help_order(:desc, :banner, :commands, :options)
+
+You can use this method to reorder and/or supress sections.
+
 == +run_on+
 
 The +run_on+ method is similar to +on+, except it creates a post subcommand
