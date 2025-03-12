@@ -12,6 +12,7 @@ if ENV.delete('COVERAGE')
 end
 
 require_relative "../lib/rodish"
+$:.unshift(File.expand_path(File.join(__dir__, "../lib")))
 
 gem 'minitest'
 ENV['MT_NO_PLUGINS'] = '1' # Work around stupid autoloading of plugins
@@ -22,8 +23,8 @@ require 'minitest/global_expectations/autorun'
     attr_reader :app
     before do
       c = Class.new(Array)
-
-      Rodish.processor(c) do
+      Rodish.processor(c)
+      c.on do
         options "example [options] [subcommand [subcommand_options] [...]]" do
           on("-v", "top verbose output")
           on("--version", "show program version") { halt "0.0.0" }
@@ -151,7 +152,6 @@ require 'minitest/global_expectations/autorun'
       c.freeze if frozen
       @app = c
     end
-
 
     it "executes expected command code in expected order" do
       app.process([]).must_equal [:top, :empty]
@@ -291,7 +291,10 @@ require 'minitest/global_expectations/autorun'
       app.command.subcommand("g").post_subcommand("h").command_path.must_equal %w"g h"
     end
 
-    it "can get usages for all options" do
+    next if frozen
+
+    it "usages plugin allows getting usages for all options" do
+      app.plugin :usages
       usages = app.usages
       usages.keys.sort.must_equal [
         "",
@@ -372,7 +375,75 @@ require 'minitest/global_expectations/autorun'
       USAGE
     end
 
-    next if frozen
+    it "supports loading plugins before configuring root command" do
+      c = Class.new(Array)
+      Rodish.processor(c)
+      c.plugin :usages
+      c.usages.must_equal({""=>""})
+    end
+
+    it "raises for invalid plugin argument" do
+      proc{app.plugin("usages")}.must_raise(ArgumentError).message.must_equal('invalid argument to plugin: "usages"')
+    end
+
+    it "raises if plugin file exists but plugin does not register itself after loading it" do
+      mod = Module.new{def fetch(_); end}
+      Rodish::Plugins.singleton_class.prepend(mod)
+      proc{app.plugin(:usages)}.must_raise(RuntimeError).message.must_equal('rodish plugin did not properly register itself: :usages')
+    ensure
+      mod.send(:remove_method, :fetch)
+    end
+
+    it "correctly handles case where plugin module loads plugin" do
+      called = false
+      mod = Module.new{define_method(:fetch){|name| called ? super(name) : (called = true; nil)}}
+      Rodish::Plugins.singleton_class.prepend(mod)
+      app.plugin(:usages)
+      app.usages.must_be_kind_of(Hash)
+    ensure
+      mod.send(:remove_method, :fetch)
+    end
+
+    it "supports empty plugin modules" do
+      app.plugin(Module.new{})
+      app.process([]).must_equal [:top, :empty]
+    end
+
+    it "runs before_load and after_load plugin methods when loading plugins" do
+      b = proc{}
+      res = []
+      app.plugin(Module.new do
+        define_singleton_method(:before_load) do |app, *a, **kw, &b|
+          res << [:before, app, a, kw, b]
+        end
+        define_singleton_method(:after_load) do |app, *a, **kw, &b|
+          res << [:after, app, a, kw, b]
+        end
+      end, 1, kw: 1, &b)
+      res.must_equal [[:before, app, [1], {kw: 1}, b], [:after, app, [1], {kw: 1}, b]]
+      app.process([]).must_equal [:top, :empty]
+    end
+
+    it "supports ProcessorMethods module in plugins" do
+      app.plugin(Module.new{self::ProcessorMethods = Module.new{def foo; :bar; end}})
+      app.foo.must_equal :bar
+    end
+
+    it "supports DSLMethods module in plugins" do
+      app.plugin(Module.new{self::DSLMethods = Module.new{def foo; :bar; end}})
+      app.on("l").foo.must_equal :bar
+    end
+
+    it "supports CommandMethods module in plugins" do
+      app.plugin(Module.new{self::CommandMethods = Module.new{def foo; :bar; end}})
+      app.command.subcommand("l").foo.must_equal :bar
+    end
+
+    it "supports OptionParserMethods module in plugins" do
+      app.plugin(Module.new{self::OptionParserMethods = Module.new{def version; on("-v"){halt "vv"}; end}})
+      app.on("c").options("x"){version}
+      proc{app.process(["c", "-v"])}.must_raise(Rodish::CommandExit).message.must_equal("vv")
+    end
 
     describe "failure handling" do
       attr_reader :res

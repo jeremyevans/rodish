@@ -13,14 +13,6 @@ module Rodish
   # until the requested command or subcommand is located,
   # which is then executed.
   class Command
-    option_parser = OptionParser.new
-    option_parser.set_banner("")
-    option_parser.freeze
-
-    # The default option parser if no options are given for
-    # the command.
-    DEFAULT_OPTION_PARSER = option_parser
-
     # A hash of subcommands for the command.  Keys are
     # subcommand name strings.
     attr_reader :subcommands
@@ -302,7 +294,7 @@ module Rodish
       when :skip
         # do nothing
       when nil
-        DEFAULT_OPTION_PARSER.order!(argv)
+        self.class::DEFAULT_OPTION_PARSER.order!(argv)
       else
         command_options = option_key ? {} : options
 

@@ -17,8 +17,8 @@ module Rodish
     # the given block in the context of a new instance using
     # that command.
     def self.command(command_path, &block)
-      command = Command.new(command_path)
-      new(command).instance_exec(&block)
+      command = self::Command.new(command_path)
+      new(command).instance_exec(&block) if block
       command
     end
 
@@ -192,12 +192,12 @@ module Rodish
     # Internals of +on+ and +run_on+.
     def _on(hash, command_name, &block)
       command_path = @command.command_path + [command_name]
-      hash[command_name] = DSL.command(command_path.freeze, &block)
+      hash[command_name] = self.class.command(command_path.freeze, &block)
     end
 
     # Internals of +options+ and +post_options+.
     def create_option_parser(&block)
-      option_parser = OptionParser.new
+      option_parser = self.class::OptionParser.new
       option_parser.banner = "" # Avoids issues when parser is frozen
       option_parser.instance_exec(&block)
       option_parser

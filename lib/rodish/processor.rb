@@ -1,10 +1,24 @@
 # frozen_string_literal: true
 
 require_relative "dsl"
+require_relative "plugins"
 
 module Rodish
   module Processor
+    # The root command for the processor.
     attr_reader :command
+
+    # Load a plugin into the current processor.
+    def plugin(name, ...)
+      mod = load_plugin(name)
+      mod.before_load(self, ...) if mod.respond_to?(:before_load)
+      extend(mod::ProcessorMethods) if defined?(mod::ProcessorMethods)
+      self::DSL.include(mod::DSLMethods) if defined?(mod::DSLMethods)
+      self::DSL::Command.include(mod::CommandMethods) if defined?(mod::CommandMethods)
+      self::DSL::OptionParser.include(mod::OptionParserMethods) if defined?(mod::OptionParserMethods)
+      mod.after_load(self, ...) if mod.respond_to?(:after_load)
+      nil
+    end
 
     # Process an argv array using a new instance of the class that is
     # extended with Rodish::Processor.  Additional arguments are passed to
@@ -26,8 +40,11 @@ module Rodish
     # block.
     def on(*command_names, &block)
       if block
-        command_name = command_names.pop
-        dsl(command_names).on(command_name, &block)
+        if command_name = command_names.pop
+          dsl(command_names).on(command_name, &block)
+        else
+          dsl(command_names).instance_exec(&block)
+        end
       else
         dsl(command_names)
       end
@@ -39,26 +56,37 @@ module Rodish
       dsl(command_names).is(command_name, args:, invalid_args_message:, &block)
     end
 
-    # Freeze the command when freezing the object.
+    # Freeze the command and classes related to the processor when freezing the processor.
     def freeze
       command.freeze
+      self::DSL.freeze
+      self::DSL::Command.freeze
+      self::DSL::OptionParser.freeze
       super
     end
 
-    # Return a hash of usage strings for the root command and all subcommands,
-    # recursively.  The hash has string keys for the command name, and
-    # string values for the help for the command.
-    def usages
-      usages = {}
-
-      command.each_subcommand do |names, command|
-        usages[names.join(" ")] = command.help
-      end
-
-      usages
-    end
-
     private
+
+    # Load the rodish plugin with the given name, which can be either a module
+    # (used directly), or a symbol (which will load a registered plugin), requiring
+    # the related plugin file if it is not already registered.
+    def load_plugin(name)
+      case name
+      when Module
+        name
+      when Symbol
+        unless mod = Rodish::Plugins.fetch(name)
+          require "rodish/plugins/#{name}"
+          unless mod = Rodish::Plugins.fetch(name)
+            raise RuntimeError, "rodish plugin did not properly register itself: #{name.inspect}"
+          end
+        end
+
+        mod
+      else
+        raise ArgumentError, "invalid argument to plugin: #{name.inspect}"
+      end
+    end
 
     # Use the array of command names to find the appropriate subcommand
     # (which may be empty to use the root command), and return a DSL instance
@@ -68,7 +96,7 @@ module Rodish
       command_names.each do |name|
         command = command.subcommand(name)
       end
-      DSL.new(command)
+      self::DSL.new(command)
     end
   end
 end

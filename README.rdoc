@@ -29,17 +29,18 @@ Here's a simple commented example with a single subcommand:
       @default_person = default_person
     end
 
-    # This installs the Rodish processor into CliExample. It also extends the
-    # CliExample class with the Rodish::Processor module).  The block provided
-    # is evaluated in the context of a Rodish::DSL instance.
-    Rodish.processor(self) do
+    # This installs the Rodish processor into CliExample. It extends the
+    # CliExample class with the Rodish::Processor module.
+    Rodish.processor(self)
+
+    # Without arguments, the on method configures the root command for
+    # the processor.
+    on do
 
       # Provide description for root command
       desc "Example Hello World CLI"
 
       # This method call creates a hello subcommand of the current/root command.
-      # If the given argv is for the hello subcommand, the block will be
-      # executed in the context of the CliExample instance.
       on "hello" do
 
         # Provide description for this subcommand
@@ -48,9 +49,11 @@ Here's a simple commented example with a single subcommand:
         # This adds a usage string and a -p options for the hello subcommand.
         # The block passed is used to set the options via the optparse library.
         options("cli-example hello [options]") do
-          on("-p", "--person=name", "say hello to specific person")
+          on("-p", "--person=name", "say hello to a specific person")
         end
 
+        # If the given argv is for the hello subcommand, this block will be
+        # executed in the context of the CliExample instance.
         run do |opts|
           "Hello #{opts[:person] || @default_person || 'World'}"
         end
@@ -253,6 +256,53 @@ the parts of the program needed to handle the given argv are loaded.
 The +autoload_post_subcommand_dir+ operates the same as
 +autoload_subcommand_dir+, but it handles post subcommands instead of
 normal subcommands.
+
+= Object Model
+
+Rodish has four main classes/modules:
+
+Processor :: This is the module that extends the class you load Rodish into.
+             It contains a reference to the root command for the processor.
+Command :: Handles processing the argv.  Contains references to subcommands,
+           similar to a tree.
+DSL :: Used for configuring the Command instances.
+OptionParser :: A subclass of Ruby's standard OptionParser, used for parsing
+                options for commands.
+
+Each Rodish processor has a separate subclass of Command, DSL, and OptionParser.
+
+= Plugins
+
+After installing Rodish into a processor, the plugin method can be used to load
+plugins into the processor. Plugins can change how the processor and related
+command, DSL, and option parsers work.  Each plugin is a module that can contain
+one or more of the following submodules:
+
+* ProcessMethods :: Extends the processor with additional methods
+* CommandMethods :: Module that is included in the Command subclass for the processor.
+* DSLMethods :: Module that is included in the DSL subclass for the processor.
+* OptionParserMethods :: Module that is included in the OptionParser subclass for the processor.
+
+Plugins can also implement singleton +before_load+ and/or +after_load+ methods,
+which are called before or after loading the plugin modules, respectively.
+
+When loading plugins, you can pass the module instance directly:
+
+  class App
+    Rodish.processor(self)
+    plugin PluginModule
+  end
+
+However, the typical usage is passing a symbol for the plugin:
+
+  class App
+    Rodish.processor(self)
+    plugin :plugin_name
+  end
+
+If the plugin has not already been registered, Rodish will require the
++rodish/plugins/plugin_name+ file, which should register the plugin.
+See plugins that ship with Rodish for an example of how to create a plugin.
 
 = Examples
 

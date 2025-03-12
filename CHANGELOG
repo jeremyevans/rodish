@@ -1,5 +1,13 @@
 === master
 
+* Move usages method to a usages plugin (jeremyevans)
+
+* Allow Processor#on to work with a block and no argument to configure the root command (jeremyevans)
+
+* Allow Rodish.processor to not require a block (jeremyevans)
+
+* Implement a plugin system (jeremyevans)
+
 * Command help is now cached if the command is frozen (jeremyevans)
 
 * Remove Command#option_{parsers,text}, as Command#help makes the methods unnecessary (jeremyevans)
