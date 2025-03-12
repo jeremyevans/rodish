@@ -293,6 +293,46 @@ require 'minitest/global_expectations/autorun'
 
     next if frozen
 
+    it "supports help_examples plugin to set the order of help sections" do
+      app.plugin :help_examples
+      app.command.subcommand("a").help.must_equal <<~USAGE
+        Usage:
+            example a [options] [subcommand [subcommand_options] [...]]
+
+        Commands:
+            b    
+
+        Options:
+            -v                               a verbose output
+      USAGE
+
+      app.on("a").help_example "foo"
+      app.command.subcommand("a").help.must_equal <<~USAGE
+        Usage:
+            example a [options] [subcommand [subcommand_options] [...]]
+
+        Commands:
+            b    
+
+        Options:
+            -v                               a verbose output
+
+        Examples:
+            foo
+      USAGE
+
+      app.on("a").help_order(:examples, :commands)
+      app.on("a").help_example "bar"
+      app.command.subcommand("a").help.must_equal <<~USAGE
+        Examples:
+            foo
+            bar
+
+        Commands:
+            b    
+      USAGE
+    end
+
     it "supports help_order to set the order of help sections" do
       app.on("a").help_order(:options, :commands)
       app.command.subcommand("a").help.must_equal <<~USAGE

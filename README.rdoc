@@ -313,6 +313,11 @@ If the plugin has not already been registered, Rodish will require the
 +rodish/plugins/plugin_name+ file, which should register the plugin.
 See plugins that ship with Rodish for an example of how to create a plugin.
 
+The following plugins ship with Rodish:
+
+help_examples :: Allow including example help output with command usage.
+usages :: Get a hash with help output for all commands/subcommands for the processor.
+
 = Examples
 
 The tests that ship with Rodish fully cover all of Rodish's functionality.
