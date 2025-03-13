@@ -86,7 +86,6 @@ require 'minitest/global_expectations/autorun'
           post_options "example g arg [options] [subcommand [subcommand_options] [...]]", key: :g do
             on("-v", "g verbose output")
             on("-k", "--key=foo", "set key")
-            wrap("Foo:", %w[bar baz quux options subcommand subcommand_options], limit: 23)
           end
 
           args(2...)
@@ -363,6 +362,19 @@ require 'minitest/global_expectations/autorun'
       USAGE
     end
 
+    it "wrapped_options_separator plugin adds wrap to option parser, for wrapping long separator lines" do
+      app.plugin :wrapped_options_separator
+      cmd = app.command.subcommand("g")
+      cmd.post_option_parser.wrap("Foo:", %w[bar baz quux options subcommand subcommand_options], limit: 23)
+      cmd.post_option_parser.summarize(String.new).must_equal <<~USAGE
+            -v                               g verbose output
+            -k, --key=foo                    set key
+        Foo: bar baz quux
+             options subcommand
+             subcommand_options
+      USAGE
+    end
+
     it "usages plugin allows getting usages for all options" do
       app.plugin :usages
       usages = app.usages
@@ -417,24 +429,6 @@ require 'minitest/global_expectations/autorun'
 
         Options:
             -v                               b verbose output
-      USAGE
-      usages["g"].must_equal <<~USAGE
-        Usage:
-            example g arg [options] [subcommand [subcommand_options] [...]]
-
-        Commands:
-            j    
-
-        Post Commands:
-            h    
-            i    
-
-        Post Options:
-            -v                               g verbose output
-            -k, --key=foo                    set key
-        Foo: bar baz quux
-             options subcommand
-             subcommand_options
       USAGE
       usages["l"].must_equal <<~USAGE
         Usage:
