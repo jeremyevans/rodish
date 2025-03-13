@@ -293,6 +293,14 @@ require 'minitest/global_expectations/autorun'
 
     next if frozen
 
+    it "supports cache_help_output plugin for caching and freezing help output" do
+      cmd = app.command.subcommand("a")
+      cmd.help.wont_be_same_as cmd.help
+      app.plugin :cache_help_output
+      app.freeze
+      cmd.help.must_be_same_as cmd.help
+    end
+
     it "supports help_examples plugin to set the order of help sections" do
       app.plugin :help_examples
       app.command.subcommand("a").help.must_equal <<~USAGE

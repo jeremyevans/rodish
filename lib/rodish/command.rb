@@ -93,14 +93,11 @@ module Rodish
       @post_subcommands.freeze
       @option_parser.freeze
       @post_option_parser.freeze
-      @help = help.freeze
       super
     end
 
     # Return a help string for the command
     def help
-      return @help if @help
-
       output = []
       (help_order || default_help_order).each do |type|
         send(:"_help_#{type}", output)
