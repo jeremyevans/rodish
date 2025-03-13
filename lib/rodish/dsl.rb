@@ -69,12 +69,9 @@ module Rodish
     # Set the number of arguments supported by this command.
     # The default is 0.  To support a fixed number of arguments,
     # pass an Integer.  To support a variable number of arguments,
-    # pass a Range.  The +invalid_args_message+ argument sets the
-    # error message to use if an invalid number of arguments is
-    # passed.
-    def args(args, invalid_args_message: nil)
+    # pass a Range.
+    def args(args)
       @command.num_args = args
-      @command.invalid_args_message = invalid_args_message
     end
 
     # Autoload subcommands from the given directory. Filenames
@@ -128,17 +125,14 @@ module Rodish
     #
     # The +args+ argument sets the number of arguments supported by
     # the command.
-    #
-    # The +invalid_args_message+ arguments set the error message to
-    # use if an invalid number of arguments is provided.
-    def is(command_name, args: 0, invalid_args_message: nil, &block)
-      _is(:on, command_name, args:, invalid_args_message:, &block)
+    def is(command_name, args: 0, &block)
+      _is(:on, command_name, args:, &block)
     end
 
     # Similar to +is+, but for post subcommands instead of normal
     # subcommands.
-    def run_is(command_name, args: 0, invalid_args_message: nil, &block)
-      _is(:run_on, command_name, args:, invalid_args_message:, &block)
+    def run_is(command_name, args: 0, &block)
+      _is(:run_on, command_name, args:, &block)
     end
 
     private
@@ -154,9 +148,9 @@ module Rodish
     end
 
     # Internals of +is+ and +run_is+.
-    def _is(meth, command_name, args:, invalid_args_message: nil, &block)
+    def _is(meth, command_name, args:, &block)
       public_send(meth, command_name) do
-        args(args, invalid_args_message:)
+        args(args)
         run(&block)
       end
     end

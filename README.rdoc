@@ -121,10 +121,6 @@ The default for +args+ is +0+. You can provide either an Integer to accept a
 fixed number of arguments, or a Range to allow any number of arguments in that
 range.
 
-The method also accepts an +invalid_args_message+ keyword argument for the
-message, to set the message to display if an invalid number of arguments is
-provided.
-
 == +run+
 
 The +run+ method sets the block to run for the current command.  If the
@@ -153,7 +149,8 @@ is equivalent to:
     end
   end
 
-The +is+ method also takes +args+ and +invalid_args_message+ keyword arguments.
+The +is+ method also takes +args+ keyword arguments to specify the number
+of arguments.
 
 == +run_on+
 
@@ -289,6 +286,8 @@ cache_help_output :: Cache help output when freezing command.
 help_examples :: Allow including example help output with command usage.
 help_option_values :: Allow showing allowed option values for help options.
 help_order :: Support overriding order of command help sections.
+invalid_args_message: Support overriding the message shown when an invalid number of arguments
+                      is provided.
 skip_option_parsing :: Allows for skipping option parsing, treating all elements of argv
                        as arguments.
 usages :: Get a hash with help output for all commands/subcommands for the processor.

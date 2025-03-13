@@ -1,5 +1,7 @@
 === master
 
+* Move invalid_args_message keyword argument handling to invalid_args_message plugin (jeremyevans)
+
 * Move skip_option_parsing method to skip_option_parsing plugin (jeremyevans)
 
 * Remove before method, users should switch to after_options_hook plugin (jeremyevans)

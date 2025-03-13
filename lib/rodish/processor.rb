@@ -52,8 +52,8 @@ module Rodish
 
     # Uses the last command name to create a subcommand under the other
     # named commands, with the block being the commands
-    def is(*command_names, command_name, args: 0, invalid_args_message: nil, &block)
-      dsl(command_names).is(command_name, args:, invalid_args_message:, &block)
+    def is(*command_names, command_name, **kw, &block)
+      dsl(command_names).is(command_name, **kw, &block)
     end
 
     # Freeze the command and classes related to the processor when freezing the processor.

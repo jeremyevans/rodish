@@ -51,10 +51,6 @@ module Rodish
     # Should be either an integer or a range of integers.
     attr_accessor :num_args
 
-    # The error message to use if an invalid number of
-    # arguments is provided.
-    attr_accessor :invalid_args_message
-
     # A description for the command
     attr_accessor :desc
 
@@ -144,10 +140,8 @@ module Rodish
           else
             context.instance_exec(argv, options, self, &run_block)
           end
-        elsif @invalid_args_message
-          raise_failure("invalid arguments#{subcommand_name} (#{@invalid_args_message})")
         else
-          raise_failure("invalid number of arguments#{subcommand_name} (accepts: #{@num_args}, given: #{argv.length})")
+          raise_invalid_args_failure(argv)
         end
       else
         process_command_failure(arg, @subcommands, "")
@@ -258,6 +252,11 @@ module Rodish
     # command help output.
     def omit_option_parser_from_help?(parser)
       parser.nil?
+    end
+
+    # Raise a error when an invalid number of arguments has been provided.
+    def raise_invalid_args_failure(argv)
+      raise_failure("invalid number of arguments#{subcommand_name} (accepts: #{@num_args}, given: #{argv.length})")
     end
 
     # Yield each local subcommand to the block.  This does not
