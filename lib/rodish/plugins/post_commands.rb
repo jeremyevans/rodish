@@ -46,12 +46,6 @@ module Rodish
         def run_on(command_name, &block)
           _on(@command.post_subcommands, command_name, &block)
         end
-
-        # Similar to +is+, but for post subcommands instead of normal
-        # subcommands.
-        def run_is(command_name, args: 0, &block)
-          _is(:run_on, command_name, args:, &block)
-        end
       end
 
       module CommandMethods

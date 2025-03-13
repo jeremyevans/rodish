@@ -132,26 +132,6 @@ first argument.
 The block will be passed two additional arguments, the options already
 parsed, and the current Rodish::Command object.
 
-== +is+
-
-The +is+ method is a shortcut for calling the +on+ method and +run+ method.
-For example:
-
-  is "hello" do
-    :world
-  end
-  
-is equivalent to:
-
-  on "hello" do
-    run do
-      :world
-    end
-  end
-
-The +is+ method also takes +args+ keyword arguments to specify the number
-of arguments.
-
 == +autoload_subcommand_dir+
 
 The +autoload_subcommand_dir+ takes a directory, and will autoload
@@ -217,7 +197,9 @@ help_option_values :: Allow showing allowed option values for help options.
 help_order :: Support overriding order of command help sections.
 invalid_args_message: Support overriding the message shown when an invalid number of arguments
                       is provided.
+is :: Adds +is+ method as a shortcut for creating a subcommand with +on+ and +run+.
 post_commands :: Adds support for subcommands that appear after arguments (see below).
+run_is :: Adds +run_is+ method as a shortcut for creating a post subcommand with  +run_on+ and +run+.
 skip_option_parsing :: Allows for skipping option parsing, treating all elements of argv
                        as arguments.
 usages :: Get a hash with help output for all commands/subcommands for the processor.
@@ -253,11 +235,6 @@ inside the +run+ block by calling +run+ on the command argument:
 
   # process(%w[hello foo world])
   # => "Hello FOO World!"
-
-== +run_is+
-
-The +run_is+ method operates similarly to +is+, but adds a post subcommand
-instead of a normal subcommand.
 
 == +post_options+
 

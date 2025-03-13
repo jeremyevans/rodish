@@ -25,6 +25,8 @@ require 'minitest/global_expectations/autorun'
       c = Class.new(Array)
       Rodish.processor(c)
       c.plugin :post_commands
+      c.plugin :is
+      c.plugin :run_is
       c.on do
         options "example [options] [subcommand [subcommand_options] [...]]" do
           on("-v", "top verbose output")

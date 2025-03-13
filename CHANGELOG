@@ -1,5 +1,9 @@
 === master
 
+* Move run_is method to run_is plugin (jeremyevans)
+
+* Move is method to is plugin (jeremyevans)
+
 * Move post command handling to the post_commands plugin (jeremyevans)
 
 * Move invalid_args_message keyword argument handling to invalid_args_message plugin (jeremyevans)

@@ -83,26 +83,6 @@ module Rodish
       @command.run_block = block
     end
 
-    # A shortcut for calling +on+ and +run+.
-    #
-    #   is "hello" do
-    #     :world
-    #   end
-    #  
-    # is equivalent to:
-    #
-    #   on "hello" do
-    #     run do
-    #       :world
-    #     end
-    #   end
-    #
-    # The +args+ argument sets the number of arguments supported by
-    # the command.
-    def is(command_name, args: 0, &block)
-      _is(:on, command_name, args:, &block)
-    end
-
     private
 
     # Internals of autoloading of subcommands.
@@ -112,14 +92,6 @@ module Rodish
     def _autoload_subcommand_dir(hash, base)
       Dir.glob("*.rb", base:).each do |filename|
         hash[filename.chomp(".rb")] = File.expand_path(File.join(base, filename))
-      end
-    end
-
-    # Internals of +is+.
-    def _is(meth, command_name, args:, &block)
-      public_send(meth, command_name) do
-        args(args)
-        run(&block)
       end
     end
 
