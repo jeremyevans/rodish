@@ -36,11 +36,6 @@ module Rodish
       @command.banner = banner
     end
 
-    # Set the banner for post subcommand usage.
-    def post_banner(banner)
-      @command.post_banner = banner
-    end
-
     # Set the option parser for the command to based on the
     # provided block, which is executed in the context of a new
     # instance of Rodish::OptionParser. These options are parsed
@@ -55,15 +50,6 @@ module Rodish
       @command.banner = banner
       @command.option_key = key
       @command.option_parser = create_option_parser(&block)
-    end
-
-    # Similar to +options+, but sets the option parser for post
-    # subcommands.  This option parser is only used when the
-    # command is executed and chooses to run a post subcommand.
-    def post_options(banner, key: nil, &block)
-      @command.post_banner = banner
-      @command.post_option_key = key
-      @command.post_option_parser = create_option_parser(&block)
     end
 
     # Set the number of arguments supported by this command.
@@ -84,22 +70,10 @@ module Rodish
       _autoload_subcommand_dir(@command.subcommands, dir)
     end
 
-    # Similar to +autoload_subcommand_dir+, but for post
-    # subcommands instead of normal subcommands.
-    def autoload_post_subcommand_dir(dir)
-      _autoload_subcommand_dir(@command.post_subcommands, dir)
-    end
-
     # Create a new subcommand with the given name and yield to
     # the block to configure the subcommand.
     def on(command_name, &block)
       _on(@command.subcommands, command_name, &block)
-    end
-
-    # Same as +on+, but for post subcommands instead of normal
-    # subcommands.
-    def run_on(command_name, &block)
-      _on(@command.post_subcommands, command_name, &block)
     end
 
     # Set the block to run for subcommand execution.  Commands
@@ -129,15 +103,9 @@ module Rodish
       _is(:on, command_name, args:, &block)
     end
 
-    # Similar to +is+, but for post subcommands instead of normal
-    # subcommands.
-    def run_is(command_name, args: 0, &block)
-      _is(:run_on, command_name, args:, &block)
-    end
-
     private
 
-    # Internals of autoloading of normal and post subcommands.
+    # Internals of autoloading of subcommands.
     # This sets the value of the subcommand as a string instead of a
     # Command instance, and the Command#_subcommand method recognizes
     # this and handles the autoloading.
@@ -147,7 +115,7 @@ module Rodish
       end
     end
 
-    # Internals of +is+ and +run_is+.
+    # Internals of +is+.
     def _is(meth, command_name, args:, &block)
       public_send(meth, command_name) do
         args(args)
@@ -155,13 +123,13 @@ module Rodish
       end
     end
 
-    # Internals of +on+ and +run_on+.
+    # Internals of +on+.
     def _on(hash, command_name, &block)
       command_path = @command.command_path + [command_name]
       hash[command_name] = self.class.command(command_path.freeze, &block)
     end
 
-    # Internals of +options+ and +post_options+.
+    # Internals of +options+.
     def create_option_parser(&block)
       option_parser = self.class::OptionParser.new
       option_parser.banner = "" # Avoids issues when parser is frozen

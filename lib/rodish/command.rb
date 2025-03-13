@@ -6,7 +6,7 @@ require_relative "errors"
 module Rodish
   # Rodish::Command is the main object in Rodish's processing.
   # It handles a single command, and may have one or more
-  # subcommands and/or post subcommands, forming a tree.
+  # subcommands, forming a tree.
   #
   # Rodish's argv processing starts with the root command,
   # processing options and deleting appropriately to subcommands,
@@ -16,10 +16,6 @@ module Rodish
     # A hash of subcommands for the command.  Keys are
     # subcommand name strings.
     attr_reader :subcommands
-
-    # A hash of post subcommands for the command.  Keys are
-    # post subcommand name strings.
-    attr_reader :post_subcommands
 
     # The block to execute if this command is the requested
     # subcommand.  May be nil if this subcommand cannot be
@@ -39,14 +35,6 @@ module Rodish
     # are placed directly in the options hash.
     attr_accessor :option_key
 
-    # The post option parser for the current command.  Called
-    # only before dispatching to post subcommands.
-    attr_accessor :post_option_parser
-
-    # Similar to +option_key+, but for post options instead
-    # of normal subcommands.
-    attr_accessor :post_option_key
-
     # The number of arguments the run block will accept.
     # Should be either an integer or a range of integers.
     attr_accessor :num_args
@@ -57,14 +45,10 @@ module Rodish
     # A usage banner for the command or subcommands.
     attr_accessor :banner
 
-    # A usage banner for any post subcommands.
-    attr_accessor :post_banner
-
     def initialize(command_path)
       @command_path = command_path
       @command_name = command_path.join(" ").freeze
       @subcommands = {}
-      @post_subcommands = {}
       @num_args = 0
     end
 
@@ -73,10 +57,7 @@ module Rodish
     def freeze
       @subcommands.each_value(&:freeze)
       @subcommands.freeze
-      @post_subcommands.each_value(&:freeze)
-      @post_subcommands.freeze
       @option_parser.freeze
-      @post_option_parser.freeze
       super
     end
 
@@ -93,30 +74,6 @@ module Rodish
       end
       output
     end
-
-    # Run a post subcommand using the given context (generally self),
-    # options, and argv.  Usually called inside a run block, after
-    # shifting one or more values off the given argv:
-    #
-    #   run do |argv, opts, command|
-    #     @name = argv.shift
-    #     command.run(self, opts, argv)
-    #   end
-    def run(context, options, argv)
-      begin
-        process_options(argv, options, @post_option_key, @post_option_parser)
-      rescue ::OptionParser::InvalidOption => e
-        raise CommandFailure.new(e.message, self)
-      end
-
-      arg = argv[0]
-      if arg && @post_subcommands[arg]
-        process_subcommand(@post_subcommands, context, options, argv)
-      else
-        process_command_failure(arg, @post_subcommands, "post ")
-      end
-    end
-    alias run_post_subcommand run
 
     # Process options for the command using the option key and parser.
     def process_command_options(context, options, argv)
@@ -150,18 +107,15 @@ module Rodish
       raise_failure(e.message)
     end
 
-    # This yields the current command and all subcommands and
-    # post subcommands, recursively.
+    # This yields the current command and all subcommands, recursively.
     def each_subcommand(names = [].freeze, &block)
       yield names, self
       _each_subcommand(names, @subcommands, &block)
-      _each_subcommand(names, @post_subcommands, &block)
     end
 
     # Yield each banner string (if any) to the block.
     def each_banner
       yield banner if banner
-      yield post_banner if post_banner
       nil
     end
 
@@ -175,12 +129,6 @@ module Rodish
     # This will autoload the subcommand if not already loaded.
     def subcommand(name)
       _subcommand(@subcommands, name)
-    end
-
-    # Returns a Command instance for the named post subcommand.
-    # This will autoload the post subcommand if not already loaded.
-    def post_subcommand(name)
-      _subcommand(@post_subcommands, name)
     end
 
     private
@@ -203,7 +151,7 @@ module Rodish
 
     # Add banner to help output.
     def _help_banner(output)
-      if banner || post_banner
+      if each_banner{break true}
         output << "Usage:"
         each_banner do |banner|
           output << "    #{banner}"
@@ -220,10 +168,7 @@ module Rodish
         name_len = len if len > name_len
       end
 
-      {
-        "Commands:" => @subcommands,
-        "Post Commands:" => @post_subcommands
-      }.each do |heading, hash|
+      __help_command_hashes.each do |heading, hash|
         next if hash.empty?
         output << heading
         command_output = []
@@ -236,16 +181,23 @@ module Rodish
       end
     end
 
+    # Hash with hash of subcommand values to potentially show help output for.
+    def __help_command_hashes
+      {"Commands:" => @subcommands}
+    end
+
     # Add options to help output.
     def _help_options(output)
-      {
-        "Options:" => @option_parser,
-        "Post Options:" => @post_option_parser
-      }.each do |heading, parser|
+      __help_option_parser_hashes.each do |heading, parser|
         next if omit_option_parser_from_help?(parser)
         output << heading
         output << parser.summarize(String.new)
       end
+    end
+
+    # Hash with option parser values to potentially show help output for.
+    def __help_option_parser_hashes
+      {"Options:" => @option_parser}
     end
 
     # Whether the given option parser should be ommitted from the
@@ -263,7 +215,6 @@ module Rodish
     # yield the current command or nested subcommands.
     def each_local_subcommand(&block)
       _each_local_subcommand(@subcommands, &block)
-      _each_local_subcommand(@post_subcommands, &block)
     end
 
     # Internals of each_local_subcommand.
@@ -298,7 +249,7 @@ module Rodish
       subcommand
     end
 
-    # Handle command failures for both subcommands and post subcommands.
+    # Handle command failures for subcommands.
     def process_command_failure(arg, subcommands, prefix)
       if subcommands.empty?
         raise ProgramBug, "program bug, no run block or #{prefix}subcommands defined#{subcommand_name}"

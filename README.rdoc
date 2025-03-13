@@ -152,6 +152,82 @@ is equivalent to:
 The +is+ method also takes +args+ keyword arguments to specify the number
 of arguments.
 
+== +autoload_subcommand_dir+
+
+The +autoload_subcommand_dir+ takes a directory, and will autoload
+subcommands from the given directory.  Filenames ending in +.rb+ in
+this directory will be treated as subcommands, and requiring the
+file should add the appropriate subcommand.
+
+This allows you to design complex command line programs where only
+the parts of the program needed to handle the given argv are loaded.
+
+= Object Model
+
+Rodish has four main classes/modules:
+
+Processor :: This is the module that extends the class you load Rodish into.
+             It contains a reference to the root command for the processor.
+Command :: Handles processing the argv.  Contains references to subcommands,
+           similar to a tree.
+DSL :: Used for configuring the Command instances.
+OptionParser :: A subclass of Ruby's standard OptionParser, used for parsing
+                options for commands.
+
+Each Rodish processor has a separate subclass of Command, DSL, and OptionParser.
+
+= Plugins
+
+After installing Rodish into a processor, the plugin method can be used to load
+plugins into the processor. Plugins can change how the processor and related
+command, DSL, and option parsers work.  Each plugin is a module that can contain
+one or more of the following submodules:
+
+* ProcessMethods :: Extends the processor with additional methods
+* CommandMethods :: Module that is included in the Command subclass for the processor.
+* DSLMethods :: Module that is included in the DSL subclass for the processor.
+* OptionParserMethods :: Module that is included in the OptionParser subclass for the processor.
+
+Plugins can also implement singleton +before_load+ and/or +after_load+ methods,
+which are called before or after loading the plugin modules, respectively.
+
+When loading plugins, you can pass the module instance directly:
+
+  class App
+    Rodish.processor(self)
+    plugin PluginModule
+  end
+
+However, the typical usage is passing a symbol for the plugin:
+
+  class App
+    Rodish.processor(self)
+    plugin :plugin_name
+  end
+
+If the plugin has not already been registered, Rodish will require the
++rodish/plugins/plugin_name+ file, which should register the plugin.
+See plugins that ship with Rodish for an example of how to create a plugin.
+
+The following plugins ship with Rodish:
+
+cache_help_output :: Cache help output when freezing command.
+help_examples :: Allow including example help output with command usage.
+help_option_values :: Allow showing allowed option values for help options.
+help_order :: Support overriding order of command help sections.
+invalid_args_message: Support overriding the message shown when an invalid number of arguments
+                      is provided.
+post_commands :: Adds support for subcommands that appear after arguments (see below).
+skip_option_parsing :: Allows for skipping option parsing, treating all elements of argv
+                       as arguments.
+usages :: Get a hash with help output for all commands/subcommands for the processor.
+wrap_options_separator :: Add wrap method to options parser, for wrapping long separator lines
+
+= Post Commands
+
+The post_commands plugin adds support for commands that appear after arguments.
+It adds the following configuration methods:
+
 == +run_on+
 
 The +run_on+ method is similar to +on+, except it creates a post subcommand
@@ -217,81 +293,11 @@ subcommands. This parses options from the argv array that passed to
 Set the usage banner for using post subcommands with the command,
 without allowing post options for the command.
 
-== +autoload_subcommand_dir+
-
-The +autoload_subcommand_dir+ takes a directory, and will autoload
-subcommands from the given directory.  Filenames ending in +.rb+ in
-this directory will be treated as subcommands, and requiring the
-file should add the appropriate subcommand.
-
-This allows you to design complex command line programs where only
-the parts of the program needed to handle the given argv are loaded.
-
 == +autoload_post_subcommand_dir+
 
 The +autoload_post_subcommand_dir+ operates the same as
 +autoload_subcommand_dir+, but it handles post subcommands instead of
 normal subcommands.
-
-= Object Model
-
-Rodish has four main classes/modules:
-
-Processor :: This is the module that extends the class you load Rodish into.
-             It contains a reference to the root command for the processor.
-Command :: Handles processing the argv.  Contains references to subcommands,
-           similar to a tree.
-DSL :: Used for configuring the Command instances.
-OptionParser :: A subclass of Ruby's standard OptionParser, used for parsing
-                options for commands.
-
-Each Rodish processor has a separate subclass of Command, DSL, and OptionParser.
-
-= Plugins
-
-After installing Rodish into a processor, the plugin method can be used to load
-plugins into the processor. Plugins can change how the processor and related
-command, DSL, and option parsers work.  Each plugin is a module that can contain
-one or more of the following submodules:
-
-* ProcessMethods :: Extends the processor with additional methods
-* CommandMethods :: Module that is included in the Command subclass for the processor.
-* DSLMethods :: Module that is included in the DSL subclass for the processor.
-* OptionParserMethods :: Module that is included in the OptionParser subclass for the processor.
-
-Plugins can also implement singleton +before_load+ and/or +after_load+ methods,
-which are called before or after loading the plugin modules, respectively.
-
-When loading plugins, you can pass the module instance directly:
-
-  class App
-    Rodish.processor(self)
-    plugin PluginModule
-  end
-
-However, the typical usage is passing a symbol for the plugin:
-
-  class App
-    Rodish.processor(self)
-    plugin :plugin_name
-  end
-
-If the plugin has not already been registered, Rodish will require the
-+rodish/plugins/plugin_name+ file, which should register the plugin.
-See plugins that ship with Rodish for an example of how to create a plugin.
-
-The following plugins ship with Rodish:
-
-cache_help_output :: Cache help output when freezing command.
-help_examples :: Allow including example help output with command usage.
-help_option_values :: Allow showing allowed option values for help options.
-help_order :: Support overriding order of command help sections.
-invalid_args_message: Support overriding the message shown when an invalid number of arguments
-                      is provided.
-skip_option_parsing :: Allows for skipping option parsing, treating all elements of argv
-                       as arguments.
-usages :: Get a hash with help output for all commands/subcommands for the processor.
-wrap_options_separator :: Add wrap method to options parser, for wrapping long separator lines
 
 = Examples
 

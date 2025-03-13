@@ -1,5 +1,7 @@
 === master
 
+* Move post command handling to the post_commands plugin (jeremyevans)
+
 * Move invalid_args_message keyword argument handling to invalid_args_message plugin (jeremyevans)
 
 * Move skip_option_parsing method to skip_option_parsing plugin (jeremyevans)
