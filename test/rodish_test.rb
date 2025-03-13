@@ -328,6 +328,7 @@ require 'minitest/global_expectations/autorun'
             foo
       USAGE
 
+      app.plugin :help_order
       app.on("a").help_order(:examples, :commands)
       app.on("a").help_example "bar"
       app.command.subcommand("a").help.must_equal <<~USAGE
@@ -341,6 +342,7 @@ require 'minitest/global_expectations/autorun'
     end
 
     it "supports help_order to set the order of help sections" do
+      app.plugin :help_order
       app.on("a").help_order(:options, :commands)
       app.command.subcommand("a").help.must_equal <<~USAGE
         Options:
@@ -352,11 +354,18 @@ require 'minitest/global_expectations/autorun'
     end
 
     it "supports default_help_order plugin to set the order of help sections for all commands" do
-      app.plugin :default_help_order, [:options, :commands]
-      app.command.subcommand("a").help.must_equal <<~USAGE
+      app.plugin :help_order, default_help_order: [:options, :commands]
+      cmd = app.command.subcommand("a")
+      cmd.help.must_equal <<~USAGE
         Options:
             -v                               a verbose output
 
+        Commands:
+            b    
+      USAGE
+
+      app.on("a").help_order(:commands)
+      cmd.help.must_equal <<~USAGE
         Commands:
             b    
       USAGE
@@ -387,7 +396,8 @@ require 'minitest/global_expectations/autorun'
 
     it "help_options_values plugin supports context-sensitive allowed help options" do
       app.plugin :help_option_values
-      app.plugin :default_help_order, [:option_values]
+      app.plugin :help_order
+      app.on("g").help_order(:option_values)
       cmd = app.command.subcommand("g")
 
       cmd.context_help([]).must_equal ""

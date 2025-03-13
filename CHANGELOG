@@ -6,11 +6,9 @@
 
 * Move help output caching to cache_help_output plugin (jeremyevans)
 
-* Add default_help_order plugin to override the default order of help sections for all commands (jeremyevans)
+* Add help_order plugin to override the order of command help sections (jeremyevans)
 
 * Add help_examples plugin supporting showing examples in command help output (jeremyevans)
-
-* Add help_order method to support ordering and/or suppressing help sections (jeremyevans)
 
 * Move usages method to usages plugin (jeremyevans)
 

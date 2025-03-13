@@ -41,11 +41,6 @@ module Rodish
       @command.post_banner = banner
     end
 
-    # Override the order of help sections.
-    def help_order(*sections)
-      @command.help_order = sections
-    end
-
     # Skip option parsing for the command.  This is different
     # then the default option parsing, which will error if any
     # options are given.  A banner must be provided, setting

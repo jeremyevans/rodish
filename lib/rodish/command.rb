@@ -73,9 +73,6 @@ module Rodish
     # A usage banner for any post subcommands.
     attr_accessor :post_banner
 
-    # The order of sections in returned help.
-    attr_accessor :help_order
-
     def initialize(command_path)
       @command_path = command_path
       @command_name = command_path.join(" ").freeze
@@ -104,7 +101,7 @@ module Rodish
     # Return an array of help strings for the command.
     def help_lines
       output = []
-      (help_order || default_help_order).each do |type|
+      help_order.each do |type|
         send(:"_help_#{type}", output)
       end
       output
@@ -200,6 +197,10 @@ module Rodish
     end
 
     private
+
+    def help_order
+      default_help_order
+    end
 
     # The default order of help sections
     def default_help_order
