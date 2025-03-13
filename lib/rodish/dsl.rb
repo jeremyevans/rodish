@@ -79,13 +79,6 @@ module Rodish
       @command.post_option_parser = create_option_parser(&block)
     end
 
-    # Sets the after_options block.  This block is executed in the same
-    # context as the run block would be executed, directly after
-    # option parsing.
-    def after_options(&block)
-      @command.after_options = block
-    end
-
     # Sets the before block.  This block is executed in the same
     # context as the run block would be executed, before either
     # subcommand execution or execution of the current command.

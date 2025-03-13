@@ -1,5 +1,7 @@
 === master
 
+* Move after_options hook to after_options_hook plugin (jeremyevans)
+
 * Add help_option_values plugin for showing allowed option values (jeremyevans)
 
 * Move option parser wrap method to wrapped_options_separator plugin (jeremyevans)

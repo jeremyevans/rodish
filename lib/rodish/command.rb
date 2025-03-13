@@ -47,9 +47,6 @@ module Rodish
     # of normal subcommands.
     attr_accessor :post_option_key
 
-    # A hook to execute after parsing options for the command.
-    attr_accessor :after_options
-
     # A hook to execute before executing the current
     # command or dispatching to subcommands. This will not
     # be called if an invalid subcommand is given and no
@@ -131,13 +128,17 @@ module Rodish
     end
     alias run_post_subcommand run
 
+    # Process options for the command using the option key and parser.
+    def process_command_options(context, options, argv)
+      process_options(argv, options, @option_key, @option_parser)
+    end
+
     # Process the current command.  This first processes the options.
     # After processing the options, it checks if the first argument
     # in the remaining argv is a subcommand.  If so, it dispatches to
     # that subcommand.  If not, it dispatches to the run block.
     def process(context, options, argv)
-      process_options(argv, options, @option_key, @option_parser)
-      context.instance_exec(argv, options, &after_options) if after_options
+      process_command_options(context, options, argv)
 
       arg = argv[0]
       if argv && @subcommands[arg]

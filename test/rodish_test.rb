@@ -125,10 +125,6 @@ require 'minitest/global_expectations/autorun'
           args(0...)
 
           on "m" do
-            after_options do
-              push [:m, :after_options]
-            end
-
             before do
               push [:mb, :before]
             end
@@ -585,6 +581,13 @@ require 'minitest/global_expectations/autorun'
         res.must_equal [:top]
         proc{app.process(%w[d 1 2])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (accepts: 1, given: 2)")
         res.must_equal [:top]
+      end
+
+      it "after_options_hook plugin should support an after_options hook" do
+        app.plugin :after_options_hook
+        app.on("l", "m").after_options do
+          push [:m, :after_options]
+        end
         proc{app.process(%w[l m])}.must_raise(Rodish::CommandFailure).message.must_equal("no subcommand provided")
         res.must_equal [:top, [:m, :after_options]]
         proc{app.process(%w[l m n 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for l m n subcommand (accepts: 0, given: 1)")
