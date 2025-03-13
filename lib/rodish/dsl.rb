@@ -79,14 +79,6 @@ module Rodish
       @command.post_option_parser = create_option_parser(&block)
     end
 
-    # Sets the before block.  This block is executed in the same
-    # context as the run block would be executed, before either
-    # subcommand execution or execution of the current command.
-    # It is not called on invalid or missing subcommands.
-    def before(&block)
-      @command.before = block
-    end
-
     # Set the number of arguments supported by this command.
     # The default is 0.  To support a fixed number of arguments,
     # pass an Integer.  To support a variable number of arguments,

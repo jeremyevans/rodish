@@ -155,14 +155,6 @@ is equivalent to:
 
 The +is+ method also takes +args+ and +invalid_args_message+ keyword arguments.
 
-== +before+
-
-The +before+ method takes a block, and this block is executed before command
-or subcommand execution, in the same context that the +run+ block would be
-executed in.  It is passed the remaining argv array and the already parsed
-options. This is not called if an invalid subcommand is requested and there
-is no run block for the command.
-
 == +skip_option_parsing+
 
 The +skip_option_parsing+ method makes the command do no option parsing,

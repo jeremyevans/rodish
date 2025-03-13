@@ -31,24 +31,12 @@ require 'minitest/global_expectations/autorun'
           on("--help", "show program help") { halt c.command.help }
         end
 
-        before do
-          push :top
-        end
-
         on "a" do
-          before do
-            push :before_a
-          end
-
           options "example a [options] [subcommand [subcommand_options] [...]]", key: :a do
             on("-v", "a verbose output")
           end
 
           on "b" do
-            before do
-              push :before_b
-            end
-
             options "example a b [options] arg [...]", key: :b do
               on("-v", "b verbose output")
             end
@@ -99,11 +87,6 @@ require 'minitest/global_expectations/autorun'
           end
 
           run_on "i" do
-            before do |_, opts|
-              push opts.dig(:g, :v)
-              push opts.dig(:g, :key)
-            end
-
             is "k" do
               push :k
             end
@@ -125,10 +108,6 @@ require 'minitest/global_expectations/autorun'
           args(0...)
 
           on "m" do
-            before do
-              push [:mb, :before]
-            end
-
             is "n" do
               push :n
             end
@@ -149,33 +128,33 @@ require 'minitest/global_expectations/autorun'
     end
 
     it "executes expected command code in expected order" do
-      app.process([]).must_equal [:top, :empty]
-      app.process(%w[a b 1]).must_equal [:top, :before_a, :before_b, [:b, %w[1], {a: {}, b: {}}]]
-      app.process(%w[a b 1 2]).must_equal [:top, :before_a, :before_b, [:b, %w[1 2], {a: {}, b: {}}]]
-      app.process(%w[a 3 4]).must_equal [:top, :before_a, [:a, "3", "4"]]
-      app.process(%w[c]).must_equal [:top, :c]
-      app.process(%w[d 5]).must_equal [:top, [:d, "5"]]
-      app.process(%w[e f]).must_equal [:top, :f]
+      app.process([]).must_equal [:empty]
+      app.process(%w[a b 1]).must_equal [[:b, %w[1], {a: {}, b: {}}]]
+      app.process(%w[a b 1 2]).must_equal [[:b, %w[1 2], {a: {}, b: {}}]]
+      app.process(%w[a 3 4]).must_equal [[:a, "3", "4"]]
+      app.process(%w[c]).must_equal [:c]
+      app.process(%w[d 5]).must_equal [[:d, "5"]]
+      app.process(%w[e f]).must_equal [:f]
     end
 
     it "supports run_on/run_is for subcommands dispatched to during run" do
-      app.process(%w[g j]).must_equal [:top, :j]
-      app.process(%w[g 1 h]).must_equal [:top, [:g, "1"], [:h, nil, nil]]
-      app.process(%w[g 1 i]).must_equal [:top, [:g, "1"], nil, nil, :i]
-      app.process(%w[g 1 i k]).must_equal [:top, [:g, "1"], nil, nil, :k]
+      app.process(%w[g j]).must_equal [:j]
+      app.process(%w[g 1 h]).must_equal [[:g, "1"], [:h, nil, nil]]
+      app.process(%w[g 1 i]).must_equal [[:g, "1"], :i]
+      app.process(%w[g 1 i k]).must_equal [[:g, "1"], :k]
     end
 
     it "supports post options for commands, parsed before subcommand dispatching" do
-      app.process(%w[g 1 -v h]).must_equal [:top, [:g, "1"], [:h, true, nil]]
-      app.process(%w[g 1 -v i]).must_equal [:top, [:g, "1"], true, nil, :i]
-      app.process(%w[g 1 -v i k]).must_equal [:top, [:g, "1"], true, nil, :k]
-      app.process(%w[g 1 -k 2 h]).must_equal [:top, [:g, "1"], [:h, nil, "2"]]
-      app.process(%w[g 1 -k 2 i]).must_equal [:top, [:g, "1"], nil, "2", :i]
-      app.process(%w[g 1 -k 2 i k]).must_equal [:top, [:g, "1"], nil, "2", :k]
+      app.process(%w[g 1 -v h]).must_equal [[:g, "1"], [:h, true, nil]]
+      app.process(%w[g 1 -v i]).must_equal [[:g, "1"], :i]
+      app.process(%w[g 1 -v i k]).must_equal [[:g, "1"], :k]
+      app.process(%w[g 1 -k 2 h]).must_equal [[:g, "1"], [:h, nil, "2"]]
+      app.process(%w[g 1 -k 2 i]).must_equal [[:g, "1"], :i]
+      app.process(%w[g 1 -k 2 i k]).must_equal [[:g, "1"], :k]
     end
 
     it "supports skipping option parsing" do
-      app.process(%w[l -A 1 b]).must_equal [:top, [:l, %w[-A 1 b]]]
+      app.process(%w[l -A 1 b]).must_equal [[:l, %w[-A 1 b]]]
     end
 
     it "handles invalid subcommands dispatched to during run" do
@@ -183,8 +162,8 @@ require 'minitest/global_expectations/autorun'
     end
 
     it "handles options at any level they are defined" do
-      app.process(%w[-v a b -v 1 2]).must_equal [:top, :before_a, :before_b, [:b, %w[1 2], {a: {}, b: {v: true}, v: true}]]
-      app.process(%w[a -v b 1 2]).must_equal [:top, :before_a, :before_b, [:b, %w[1 2], {a: {v: true}, b: {}}]]
+      app.process(%w[-v a b -v 1 2]).must_equal [[:b, %w[1 2], {a: {}, b: {v: true}, v: true}]]
+      app.process(%w[a -v b 1 2]).must_equal [[:b, %w[1 2], {a: {v: true}, b: {}}]]
     end
 
     it "raises CommandFailure when there a command has no command block or subcommands" do
@@ -517,7 +496,7 @@ require 'minitest/global_expectations/autorun'
 
     it "supports empty plugin modules" do
       app.plugin(Module.new{})
-      app.process([]).must_equal [:top, :empty]
+      app.process([]).must_equal [:empty]
     end
 
     it "runs before_load and after_load plugin methods when loading plugins" do
@@ -532,7 +511,7 @@ require 'minitest/global_expectations/autorun'
         end
       end, 1, kw: 1, &b)
       res.must_equal [[:before, app, [1], {kw: 1}, b], [:after, app, [1], {kw: 1}, b]]
-      app.process([]).must_equal [:top, :empty]
+      app.process([]).must_equal [:empty]
     end
 
     it "supports ProcessorMethods module in plugins" do
@@ -568,19 +547,19 @@ require 'minitest/global_expectations/autorun'
         proc{app.process(%w[6])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for command (accepts: 0, given: 1)")
         res.must_be_empty
         proc{app.process(%w[a b])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for a b subcommand (accepts: 1..., given: 0)")
-        res.must_equal [:top, :before_a]
+        res.must_equal []
         proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
-        res.must_equal [:top]
+        res.must_equal []
         proc{app.process(%w[a 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
-        res.must_equal [:top]
+        res.must_equal []
         proc{app.process(%w[a 1 2 3])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
-        res.must_equal [:top]
+        res.must_equal []
         proc{app.process(%w[c 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for c subcommand (accepts: 0, given: 1)")
-        res.must_equal [:top]
+        res.must_equal []
         proc{app.process(%w[d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (accepts: 1, given: 0)")
-        res.must_equal [:top]
+        res.must_equal []
         proc{app.process(%w[d 1 2])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (accepts: 1, given: 2)")
-        res.must_equal [:top]
+        res.must_equal []
       end
 
       it "after_options_hook plugin should support an after_options hook" do
@@ -589,19 +568,19 @@ require 'minitest/global_expectations/autorun'
           push [:m, :after_options]
         end
         proc{app.process(%w[l m])}.must_raise(Rodish::CommandFailure).message.must_equal("no subcommand provided")
-        res.must_equal [:top, [:m, :after_options]]
+        res.must_equal [[:m, :after_options]]
         proc{app.process(%w[l m n 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for l m n subcommand (accepts: 0, given: 1)")
-        res.must_equal [:top, [:m, :after_options], [:mb, :before]]
+        res.must_equal [[:m, :after_options]]
       end
 
       it "raises CommandFailure for missing subcommand" do
         proc{app.process(%w[e])}.must_raise(Rodish::CommandFailure).message.must_equal("no subcommand provided")
-        res.must_equal [:top]
+        res.must_equal []
       end
 
       it "raises CommandFailure for invalid subcommand" do
         proc{app.process(%w[e g])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid subcommand: g")
-        res.must_equal [:top]
+        res.must_equal []
 
         app = Rodish.processor(Class.new) do
           on("f") {}
@@ -613,11 +592,11 @@ require 'minitest/global_expectations/autorun'
         proc{app.process(%w[-d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -d")
         res.must_be_empty
         proc{app.process(%w[a -d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -d")
-        res.must_equal [:top]
+        res.must_equal []
         proc{app.process(%w[a b -d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -d")
-        res.must_equal [:top, :before_a]
+        res.must_equal []
         proc{app.process(%w[d -d 1 2])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid option: -d")
-        res.must_equal [:top]
+        res.must_equal []
       end
 
       it "CommandFailure#message_with_usage handles cases where no command is present" do
@@ -635,7 +614,7 @@ require 'minitest/global_expectations/autorun'
           end
         end
         app.process(%w[z h])
-        res.must_equal [:top, [:z, "h"]]
+        res.must_equal [[:z, "h"]]
 
         app.on("z", "y") do
           run do
@@ -643,13 +622,13 @@ require 'minitest/global_expectations/autorun'
           end
         end
         app.process(%w[z y])
-        res.must_equal [:top, :y]
+        res.must_equal [:y]
 
         app.is("z", "y", "x", args: 1) do |arg|
           push [:x, arg]
         end
         app.process(%w[z y x j])
-        res.must_equal [:top, [:x, "j"]]
+        res.must_equal [[:x, "j"]]
       end
 
       it "supports autoloading" do
@@ -667,10 +646,10 @@ require 'minitest/global_expectations/autorun'
         end
 
         app.process(%w[k m])
-        res.must_equal [:top, :m]
+        res.must_equal [:m]
 
         app.process(%w[k 1 o])
-        res.must_equal [:top, [:k, "1"], :o]
+        res.must_equal [[:k, "1"], :o]
 
         proc{app.process(%w[k n])}.must_raise(Rodish::CommandFailure).message.must_equal("program bug, autoload of subcommand n failed")
       ensure
