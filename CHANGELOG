@@ -1,5 +1,7 @@
 === master
 
+* Move skip_option_parsing method to skip_option_parsing plugin (jeremyevans)
+
 * Remove before method, users should switch to after_options_hook plugin (jeremyevans)
 
 * Move after_options hook to after_options_hook plugin (jeremyevans)

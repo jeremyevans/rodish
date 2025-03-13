@@ -41,19 +41,6 @@ module Rodish
       @command.post_banner = banner
     end
 
-    # Skip option parsing for the command.  This is different
-    # then the default option parsing, which will error if any
-    # options are given.  A banner must be provided, setting
-    # the usage for the command.
-    #
-    # The main reason to use this is if you are going to pass
-    # the entire remaining argv as the argv to another
-    # program.
-    def skip_option_parsing(banner)
-      @command.banner = banner
-      @command.option_parser = :skip
-    end
-
     # Set the option parser for the command to based on the
     # provided block, which is executed in the context of a new
     # instance of Rodish::OptionParser. These options are parsed

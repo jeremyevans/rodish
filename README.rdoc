@@ -155,12 +155,6 @@ is equivalent to:
 
 The +is+ method also takes +args+ and +invalid_args_message+ keyword arguments.
 
-== +skip_option_parsing+
-
-The +skip_option_parsing+ method makes the command do no option parsing,
-treating all elements of the remaining argv as options.  It requires a
-usage string for the command, similar to +options+.
-
 == +run_on+
 
 The +run_on+ method is similar to +on+, except it creates a post subcommand
@@ -295,6 +289,8 @@ cache_help_output :: Cache help output when freezing command.
 help_examples :: Allow including example help output with command usage.
 help_option_values :: Allow showing allowed option values for help options.
 help_order :: Support overriding order of command help sections.
+skip_option_parsing :: Allows for skipping option parsing, treating all elements of argv
+                       as arguments.
 usages :: Get a hash with help output for all commands/subcommands for the processor.
 wrap_options_separator :: Add wrap method to options parser, for wrapping long separator lines
 

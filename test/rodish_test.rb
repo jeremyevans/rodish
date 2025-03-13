@@ -103,7 +103,7 @@ require 'minitest/global_expectations/autorun'
         end
 
         on "l" do
-          skip_option_parsing "example l"
+          banner "example l"
 
           args(0...)
 
@@ -151,10 +151,6 @@ require 'minitest/global_expectations/autorun'
       app.process(%w[g 1 -k 2 h]).must_equal [[:g, "1"], [:h, nil, "2"]]
       app.process(%w[g 1 -k 2 i]).must_equal [[:g, "1"], :i]
       app.process(%w[g 1 -k 2 i k]).must_equal [[:g, "1"], :k]
-    end
-
-    it "supports skipping option parsing" do
-      app.process(%w[l -A 1 b]).must_equal [[:l, %w[-A 1 b]]]
     end
 
     it "handles invalid subcommands dispatched to during run" do
@@ -266,6 +262,29 @@ require 'minitest/global_expectations/autorun'
     end
 
     next if frozen
+
+    it "skip_option_parsing plugin supports skipping option parsing" do
+      app.plugin :skip_option_parsing
+      app.on("l").options("example l 1"){}
+      app.command.subcommand("l").help.must_equal <<~USAGE
+        Usage:
+            example l 1
+
+        Commands:
+            m    
+
+        Options:
+      USAGE
+      app.on("l").skip_option_parsing "example l 2"
+      app.process(%w[l -A 1 b]).must_equal [[:l, %w[-A 1 b]]]
+      app.command.subcommand("l").help.must_equal <<~USAGE
+        Usage:
+            example l 2
+
+        Commands:
+            m    
+      USAGE
+    end
 
     it "supports cache_help_output plugin for caching and freezing help output" do
       cmd = app.command.subcommand("a")

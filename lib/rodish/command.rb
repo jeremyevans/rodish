@@ -248,10 +248,16 @@ module Rodish
         "Options:" => @option_parser,
         "Post Options:" => @post_option_parser
       }.each do |heading, parser|
-        next if parser.nil? || parser == :skip
+        next if omit_option_parser_from_help?(parser)
         output << heading
         output << parser.summarize(String.new)
       end
+    end
+
+    # Whether the given option parser should be ommitted from the
+    # command help output.
+    def omit_option_parser_from_help?(parser)
+      parser.nil?
     end
 
     # Yield each local subcommand to the block.  This does not
@@ -308,12 +314,7 @@ module Rodish
     # parsed options are added as a options subhash under the given key.
     # Otherwise, parsed options placed directly into options.
     def process_options(argv, options, option_key, option_parser)
-      case option_parser
-      when :skip
-        # do nothing
-      when nil
-        self.class::DEFAULT_OPTION_PARSER.order!(argv)
-      else
+      if option_parser
         command_options = option_key ? {} : options
 
         option_parser.order!(argv, into: command_options)
@@ -321,6 +322,8 @@ module Rodish
         if option_key
           options[option_key] = command_options
         end
+      else
+        self.class::DEFAULT_OPTION_PARSER.order!(argv)
       end
     end
 
