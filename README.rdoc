@@ -318,6 +318,7 @@ The following plugins ship with Rodish:
 cache_help_output :: Cache help output when freezing command.
 default_help_order :: Support overriding order of help sections for all commands.
 help_examples :: Allow including example help output with command usage.
+help_option_values :: Allow showing allowed option values for help options.
 usages :: Get a hash with help output for all commands/subcommands for the processor.
 wrap_options_separator :: Add wrap method to options parser, for wrapping long separator lines
 

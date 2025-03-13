@@ -362,6 +362,47 @@ require 'minitest/global_expectations/autorun'
       USAGE
     end
 
+    it "help_options_values plugin supports showing allowed help options" do
+      app.plugin :help_option_values
+      app.on("g").help_option_values("Foo:", %w[bar baz quux options subcommand subcommand_options])
+      app.command.subcommand("g").help.must_equal <<~USAGE
+          Usage:
+              example g arg [options] [subcommand [subcommand_options] [...]]
+
+          Commands:
+              j    
+
+          Post Commands:
+              h    
+              i    
+
+          Post Options:
+              -v                               g verbose output
+              -k, --key=foo                    set key
+
+          Allowed Option Values:
+              Foo: bar baz quux options subcommand subcommand_options
+      USAGE
+    end
+
+    it "help_options_values plugin supports context-sensitive allowed help options" do
+      app.plugin :help_option_values
+      app.plugin :default_help_order, [:option_values]
+      cmd = app.command.subcommand("g")
+
+      cmd.context_help([]).must_equal ""
+
+      app.on("g").help_option_values("Foo:"){empty? ? %w[bar baz quux options] : %w[subcommand subcommand_options]}
+      cmd.context_help([]).must_equal <<~USAGE
+          Allowed Option Values:
+              Foo: bar baz quux options
+      USAGE
+      cmd.context_help([1]).must_equal <<~USAGE
+          Allowed Option Values:
+              Foo: subcommand subcommand_options
+      USAGE
+    end
+
     it "wrapped_options_separator plugin adds wrap to option parser, for wrapping long separator lines" do
       app.plugin :wrapped_options_separator
       cmd = app.command.subcommand("g")

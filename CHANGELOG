@@ -1,5 +1,7 @@
 === master
 
+* Add help_option_values plugin for showing allowed option values (jeremyevans)
+
 * Move option parser wrap method to wrapped_options_separator plugin (jeremyevans)
 
 * Move help output caching to cache_help_output plugin (jeremyevans)

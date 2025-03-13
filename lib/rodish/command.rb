@@ -96,13 +96,18 @@ module Rodish
       super
     end
 
-    # Return a help string for the command
+    # Return a help string for the command.
     def help
+      help_lines.join("\n")
+    end
+
+    # Return an array of help strings for the command.
+    def help_lines
       output = []
       (help_order || default_help_order).each do |type|
         send(:"_help_#{type}", output)
       end
-      output.join("\n")
+      output
     end
 
     # Run a post subcommand using the given context (generally self),
