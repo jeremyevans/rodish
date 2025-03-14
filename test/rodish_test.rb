@@ -521,6 +521,12 @@ require 'minitest/global_expectations/autorun'
       app.process([]).must_equal [:empty]
     end
 
+    it "raises for plugin call with arguments when plugin doesn't support arguments" do
+      proc{app.plugin(Module.new{}, :x)}.must_raise ArgumentError
+      proc{app.plugin(Module.new{}, :x=>1)}.must_raise ArgumentError
+      proc{app.plugin(Module.new{}){}}.must_raise ArgumentError
+    end
+
     it "runs before_load and after_load plugin methods when loading plugins" do
       b = proc{}
       res = []

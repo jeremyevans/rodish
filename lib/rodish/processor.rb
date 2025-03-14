@@ -11,6 +11,11 @@ module Rodish
     # Load a plugin into the current processor.
     def plugin(name, ...)
       mod = load_plugin(name)
+
+      unless mod.respond_to?(:before_load) || mod.respond_to?(:after_load)
+        _plugin_without_before_or_after_load_check(...)
+      end
+
       mod.before_load(self, ...) if mod.respond_to?(:before_load)
       extend(mod::ProcessorMethods) if defined?(mod::ProcessorMethods)
       self::DSL.include(mod::DSLMethods) if defined?(mod::DSLMethods)
@@ -66,6 +71,10 @@ module Rodish
     end
 
     private
+
+    def _plugin_without_before_or_after_load_check
+      raise ArgumentError, "plugin doesn't support block" if block_given?
+    end
 
     # Load the rodish plugin with the given name, which can be either a module
     # (used directly), or a symbol (which will load a registered plugin), requiring
