@@ -73,7 +73,7 @@ module Rodish
     private
 
     def _plugin_without_before_or_after_load_check
-      raise ArgumentError, "plugin doesn't support block" if block_given?
+      raise ArgumentError, "plugin doesn't support block" if defined?(yield)
     end
 
     # Load the rodish plugin with the given name, which can be either a module
