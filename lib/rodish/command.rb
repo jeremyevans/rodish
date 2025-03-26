@@ -47,7 +47,7 @@ module Rodish
 
     def initialize(command_path)
       @command_path = command_path
-      @command_name = command_path.join(" ").freeze
+      @command_name = _command_name(command_path)
       @subcommands = {}
       @num_args = 0
     end
@@ -292,6 +292,12 @@ module Rodish
       else
         " for #{@command_name} subcommand"
       end
+    end
+
+    # Set the command name for the command.  The command name is used
+    # in error messages.
+    def _command_name(command_path)
+      command_path.join(" ").freeze
     end
 
     # Return whether the given argv has a valid number of arguments.
