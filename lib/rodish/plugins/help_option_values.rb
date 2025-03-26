@@ -44,6 +44,11 @@ module Rodish
 
         private
 
+        # The string to use for the allowed option values heading in help output.
+        def help_allowed_option_values_heading
+          "Allowed Option Values:"
+        end
+
         # Include option values after options.
         def default_help_order
           order = super
@@ -56,7 +61,7 @@ module Rodish
         # option values for this command.
         def _help_option_values(output)
           if help_option_values
-            output << "Allowed Option Values:"
+            output << help_allowed_option_values_heading
             help_option_values.each do |name, values|
               if values.is_a?(ContextWrappedOptionValues)
                 output << values

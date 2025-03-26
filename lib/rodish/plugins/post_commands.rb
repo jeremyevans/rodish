@@ -123,17 +123,27 @@ module Rodish
 
         private
 
+        # The string to use for the post commands heading in help output.
+        def help_post_commands_heading
+          "Post Commands:"
+        end
+
+        # The string to use for the post options heading in help output.
+        def help_post_options_heading
+          "Post Options:"
+        end
+
         # Include post subcommands as separate help section.
         def __help_command_hashes
           hash = super
-          hash["Post Commands:"] = @post_subcommands
+          hash[help_post_commands_heading] = @post_subcommands
           hash
         end
 
         # Include post option parser as separate help section.
         def __help_option_parser_hashes
           hash = super
-          hash["Post Options:"] = @post_option_parser
+          hash[help_post_options_heading] = @post_option_parser
           hash
         end
 

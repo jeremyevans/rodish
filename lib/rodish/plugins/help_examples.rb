@@ -21,6 +21,11 @@ module Rodish
 
         private
 
+        # The string to use for the examples heading in help output.
+        def help_examples_heading
+          "Examples:"
+        end
+
         # Include examples at the end of the help text by default.
         def default_help_order
           super << :examples
@@ -28,7 +33,7 @@ module Rodish
 
         def _help_examples(output)
           if help_examples
-            output << "Examples:"
+            output << help_examples_heading
             help_examples.each  do |example|
               output << "    #{example}"
             end

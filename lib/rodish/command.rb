@@ -133,6 +133,22 @@ module Rodish
 
     private
 
+    # The string to use for the usage heading in help output.
+    def help_usage_heading
+      "Usage:"
+    end
+
+    # The string to use for the command heading in help output.
+    def help_command_heading
+      "Commands:"
+    end
+
+    # The string to use for the options heading in help output.
+    def help_options_heading
+      "Options:"
+    end
+
+    # Use default help order by default.
     def help_order
       default_help_order
     end
@@ -152,7 +168,7 @@ module Rodish
     # Add banner to help output.
     def _help_banner(output)
       if each_banner{break true}
-        output << "Usage:"
+        output << help_usage_heading
         each_banner do |banner|
           output << "    #{banner}"
         end
@@ -183,7 +199,7 @@ module Rodish
 
     # Hash with hash of subcommand values to potentially show help output for.
     def __help_command_hashes
-      {"Commands:" => @subcommands}
+      {help_command_heading => @subcommands}
     end
 
     # Add options to help output.
@@ -197,7 +213,7 @@ module Rodish
 
     # Hash with option parser values to potentially show help output for.
     def __help_option_parser_hashes
-      {"Options:" => @option_parser}
+      {help_options_heading => @option_parser}
     end
 
     # Whether the given option parser should be ommitted from the
@@ -208,7 +224,7 @@ module Rodish
 
     # Raise a error when an invalid number of arguments has been provided.
     def raise_invalid_args_failure(argv)
-      raise_failure("invalid number of arguments#{subcommand_name} (accepts: #{@num_args}, given: #{argv.length})")
+      raise_failure(invalid_num_args_failure_error_message(argv))
     end
 
     # Yield each local subcommand to the block.  This does not
@@ -254,10 +270,25 @@ module Rodish
       if subcommands.empty?
         raise ProgramBug, "program bug, no run block or #{prefix}subcommands defined#{subcommand_name}"
       elsif arg
-        raise_failure("invalid #{prefix}subcommand: #{arg}")
+        raise_failure(invalid_subcommand_error_message(arg, subcommands, prefix))
       else
-        raise_failure("no #{prefix}subcommand provided")
+        raise_failure(no_subcommand_provided_error_message(arg, subcommands, prefix))
       end
+    end
+
+    # The error message to use when an invalid number of arguments is provided.
+    def invalid_num_args_failure_error_message(argv)
+      "invalid number of arguments#{subcommand_name} (accepts: #{@num_args}, given: #{argv.length})"
+    end
+
+    # Error message for cases where an invalid subcommand is provided.
+    def invalid_subcommand_error_message(arg, subcommands, prefix)
+      "invalid #{prefix}subcommand: #{arg}"
+    end
+
+    # Error message for cases where a subcommand is required and not provided.
+    def no_subcommand_provided_error_message(arg, subcommands, prefix)
+      "no #{prefix}subcommand provided"
     end
 
     # Process options for the given command. If option_key is set,

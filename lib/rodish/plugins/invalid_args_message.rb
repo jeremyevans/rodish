@@ -59,9 +59,9 @@ module Rodish
         private
 
         # Use invalid_args_message if it has been set.
-        def raise_invalid_args_failure(argv)
+        def invalid_num_args_failure_error_message(argv)
           if @invalid_args_message
-            raise_failure("invalid arguments#{subcommand_name} (#{@invalid_args_message})")
+            "invalid arguments#{subcommand_name} (#{@invalid_args_message})"
           else
             super
           end
