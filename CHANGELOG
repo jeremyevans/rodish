@@ -1,4 +1,4 @@
-=== master
+=== 2.0.0 (2025-03-26)
 
 * Add methods for user-visible strings in help output and error messages, so they can be overridden by plugins (jeremyevans)
 

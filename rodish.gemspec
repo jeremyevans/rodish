@@ -1,14 +1,14 @@
 Gem::Specification.new do |s|
   s.name = 'rodish'
-  s.version = '1.1.0'
+  s.version = '2.0.0'
   s.platform = Gem::Platform::RUBY
-  s.extra_rdoc_files = ["README.rdoc", "CHANGELOG", "MIT-LICENSE"]
-  s.rdoc_options += ["--quiet", "--line-numbers", "--inline-source", '--title', 'Rodish: Routing tree argv parser', '--main', 'README.rdoc']
+  s.extra_rdoc_files = ["MIT-LICENSE"]
+  s.rdoc_options += ["--quiet", "--line-numbers", "--inline-source", '--title', 'Rodish: Routing tree argv parser']
   s.license = "MIT"
   s.summary = "Routing tree argv parser"
   s.author = "Jeremy Evans"
   s.email = "code@jeremyevans.net"
-  s.homepage = "http://github.com/jeremyevans/rodish"
+  s.homepage = "https://rodish.jeremyevans.net/"
   s.files = %w(MIT-LICENSE) + Dir["lib/**/*.rb"]
   s.required_ruby_version = ">= 3.1"
   s.description = <<END
