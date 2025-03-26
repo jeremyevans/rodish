@@ -278,7 +278,7 @@ module Rodish
 
     # The error message to use when an invalid number of arguments is provided.
     def invalid_num_args_failure_error_message(argv)
-      "invalid number of arguments#{subcommand_name} (accepts: #{@num_args}, given: #{argv.length})"
+      "invalid number of arguments#{subcommand_name} (requires: #{@num_args}, given: #{argv.length})"
     end
 
     # Error message for cases where an invalid subcommand is provided.

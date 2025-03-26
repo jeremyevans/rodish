@@ -572,42 +572,42 @@ require 'minitest/global_expectations/autorun'
       end
 
       it "raises CommandFailure for unexpected number of arguments without executing code" do
-        proc{app.process(%w[6])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for command (accepts: 0, given: 1)")
+        proc{app.process(%w[6])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for command (requires: 0, given: 1)")
         res.must_be_empty
-        proc{app.process(%w[a b])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for a b subcommand (accepts: 1..., given: 0)")
+        proc{app.process(%w[a b])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for a b subcommand (requires: 1..., given: 0)")
         res.must_equal []
-        proc{app.process(%w[c 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for c subcommand (accepts: 0, given: 1)")
+        proc{app.process(%w[c 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for c subcommand (requires: 0, given: 1)")
         res.must_equal []
-        proc{app.process(%w[d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (accepts: 1, given: 0)")
+        proc{app.process(%w[d])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (requires: 1, given: 0)")
         res.must_equal []
-        proc{app.process(%w[d 1 2])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (accepts: 1, given: 2)")
+        proc{app.process(%w[d 1 2])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for d subcommand (requires: 1, given: 2)")
         res.must_equal []
       end
 
       it "invalid_args_message plugin supports customizing the invalid args message via #args" do
         app.plugin :invalid_args_message
-        proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for a subcommand (accepts: 2, given: 0)")
+        proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for a subcommand (requires: 2, given: 0)")
 
-        app.on("a").args(2, invalid_args_message: "accepts: x y")
-        proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
+        app.on("a").args(2, invalid_args_message: "requires: x y")
+        proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (requires: x y)")
         res.must_equal []
-        proc{app.process(%w[a 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
+        proc{app.process(%w[a 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (requires: x y)")
         res.must_equal []
-        proc{app.process(%w[a 1 2 3])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
+        proc{app.process(%w[a 1 2 3])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (requires: x y)")
         res.must_equal []
       end
 
       it "invalid_args_message plugin supports customizing the invalid args message via #is" do
         app.plugin :invalid_args_message
-        app.is("a", args: 2, invalid_args_message: "accepts: x y"){}
-        proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (accepts: x y)")
+        app.is("a", args: 2, invalid_args_message: "requires: x y"){}
+        proc{app.process(%w[a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for a subcommand (requires: x y)")
         res.must_equal []
       end
 
       it "invalid_args_message plugin supports customizing the invalid args message via #run_is" do
         app.plugin :invalid_args_message
-        app.on("g").run_is("w", args: 2, invalid_args_message: "accepts: x y"){}
-        proc{app.process(%w[g 1 w])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for g w subcommand (accepts: x y)")
+        app.on("g").run_is("w", args: 2, invalid_args_message: "requires: x y"){}
+        proc{app.process(%w[g 1 w])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid arguments for g w subcommand (requires: x y)")
         res.must_equal [[:g, "1"]]
       end
 
@@ -618,7 +618,7 @@ require 'minitest/global_expectations/autorun'
         end
         proc{app.process(%w[l m])}.must_raise(Rodish::CommandFailure).message.must_equal("no subcommand provided")
         res.must_equal [[:m, :after_options]]
-        proc{app.process(%w[l m n 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for l m n subcommand (accepts: 0, given: 1)")
+        proc{app.process(%w[l m n 1])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for l m n subcommand (requires: 0, given: 1)")
         res.must_equal [[:m, :after_options]]
       end
 
@@ -653,7 +653,7 @@ require 'minitest/global_expectations/autorun'
       end
 
       it "supports adding subcommands after initialization" do
-        proc{app.process(%w[z])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for command (accepts: 0, given: 1)")
+        proc{app.process(%w[z])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid number of arguments for command (requires: 0, given: 1)")
         res.must_be_empty
 
         app.on("z") do
