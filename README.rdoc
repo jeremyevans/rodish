@@ -79,7 +79,7 @@ Here's a simple commented example with a single subcommand:
 
 = Rodish DSL
 
-Inside the <tt>Rodish.processor</tt> block, you are in the context of the root
+Inside the +on+ block with no arguments, you are in the context of the root
 command. The following methods are available for configuring the processing of
 the command.
 
@@ -146,13 +146,14 @@ the parts of the program needed to handle the given argv are loaded.
 
 Rodish has four main classes/modules:
 
-Processor :: This is the module that extends the class you load Rodish into.
-             It contains a reference to the root command for the processor.
-Command :: Handles processing the argv.  Contains references to subcommands,
-           similar to a tree.
-DSL :: Used for configuring the Command instances.
-OptionParser :: A subclass of Ruby's standard OptionParser, used for parsing
-                options for commands.
+Rodish::Processor :: This is the module that extends the class you load Rodish into.
+                     The class becomes a Rodish processor, and contains a reference to
+                     the root command for the processor.
+Rodish::Command :: Handles processing the argv.  Contains references to subcommands,
+                   similar to a tree.
+Rodish::DSL :: Used for configuring the Rodish::Command instances.
+Rodish::OptionParser :: A subclass of Ruby's standard OptionParser, used for parsing
+                        options for commands.
 
 Each Rodish processor has a separate subclass of Command, DSL, and OptionParser.
 
@@ -163,10 +164,10 @@ plugins into the processor. Plugins can change how the processor and related
 command, DSL, and option parsers work.  Each plugin is a module that can contain
 one or more of the following submodules:
 
-* ProcessMethods :: Extends the processor with additional methods
-* CommandMethods :: Module that is included in the Command subclass for the processor.
-* DSLMethods :: Module that is included in the DSL subclass for the processor.
-* OptionParserMethods :: Module that is included in the OptionParser subclass for the processor.
++ProcessorMethods+ :: Extends the processor with additional methods
++CommandMethods+ :: Module that is included in the Command subclass for the processor.
++DSLMethods+ :: Module that is included in the DSL subclass for the processor.
++OptionParserMethods+ :: Module that is included in the OptionParser subclass for the processor.
 
 Plugins can also implement singleton +before_load+ and/or +after_load+ methods,
 which are called before or after loading the plugin modules, respectively.
@@ -195,8 +196,8 @@ cache_help_output :: Cache help output when freezing command.
 help_examples :: Allow including example help output with command usage.
 help_option_values :: Allow showing allowed option values for help options.
 help_order :: Support overriding order of command help sections.
-invalid_args_message: Support overriding the message shown when an invalid number of arguments
-                      is provided.
+invalid_args_message :: Support overriding the message shown when an invalid number of arguments
+                        is provided.
 is :: Adds +is+ method as a shortcut for creating a subcommand with +on+ and +run+.
 post_commands :: Adds support for subcommands that appear after arguments (see below).
 run_is :: Adds +run_is+ method as a shortcut for creating a post subcommand with  +run_on+ and +run+.
