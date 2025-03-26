@@ -9,9 +9,12 @@ level.
 
   gem install rodish
 
-= Source Code
+== Resources
 
-Source code is available on GitHub at https://github.com/jeremyevans/rodish
+Documentation :: https://rodish.jeremyevans.net
+Source :: https://github.com/jeremyevans/rodish
+Report a Bug :: https://github.com/jeremyevans/rodish/issues
+Ask a Question :: https://github.com/jeremyevans/rodish/discussions
 
 = Simple Example
 
