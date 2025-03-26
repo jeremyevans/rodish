@@ -18,6 +18,35 @@ gem 'minitest'
 ENV['MT_NO_PLUGINS'] = '1' # Work around stupid autoloading of plugins
 require 'minitest/global_expectations/autorun'
 
+if ENV['CHECK_METHOD_VISIBILITY']
+  require 'visibility_checker'
+
+  RODISH_APPS = []
+  VISIBILITY_CHANGES = []
+
+  Minitest.after_run do
+    if VISIBILITY_CHANGES.empty?
+      puts "No visibility changes"
+    else
+      puts "Visibility changes:"
+      VISIBILITY_CHANGES.uniq!{|v,| v}
+      puts(*VISIBILITY_CHANGES.map do |v, name|
+        "#{name}: #{v.new_visibility} method #{v.overridden_by}##{v.method} overrides #{v.original_visibility} method in #{v.defined_in}"
+      end.sort)
+    end
+  end
+
+
+  class << Rodish
+    prepend(Module.new do
+      def processor(m)
+        RODISH_APPS << m
+        super(m)
+      end
+    end)
+  end
+end
+
 [true, false].each do |frozen|
   describe "Rodish#{" (frozen)" if frozen}" do
     attr_reader :app
@@ -128,6 +157,16 @@ require 'minitest/global_expectations/autorun'
 
       c.freeze if frozen
       @app = c
+    end
+
+    if ENV['CHECK_METHOD_VISIBILITY']
+      after do
+        RODISH_APPS.each do |app|
+          [app, app::DSL, app::DSL::Command, app::DSL::OptionParser].each do |c|
+            VISIBILITY_CHANGES.concat(VisibilityChecker.visibility_changes(c).map{|v| [v, name]})
+          end
+        end.clear
+      end
     end
 
     it "executes expected command code in expected order" do
@@ -350,9 +389,15 @@ require 'minitest/global_expectations/autorun'
       USAGE
     end
 
-    it "supports default_help_order plugin to set the order of help sections for all commands" do
-      app.plugin :help_order, default_help_order: [:options, :commands]
+    it "supports help_order plugin to set the order of help sections for all commands" do
       cmd = app.command.subcommand("a")
+      app.plugin :help_order, default_help_order: [:options]
+      cmd.help.must_equal <<~USAGE
+        Options:
+            -v                               a verbose output
+      USAGE
+
+      app.plugin :help_order, default_help_order: [:options, :commands]
       cmd.help.must_equal <<~USAGE
         Options:
             -v                               a verbose output

@@ -10,7 +10,7 @@ module Rodish
 
       # Return an array of strings, each no longer than limit,
       # showing the prefix and all values.
-      def wrap(prefix, values, separator: " ", limit: 80)
+      public def wrap(prefix, values, separator: " ", limit: 80)
         line = [prefix]
         lines = [line]
         prefix_length = length = prefix.length

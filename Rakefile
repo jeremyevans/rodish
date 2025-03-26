@@ -15,8 +15,12 @@ end
 
 desc "Run tests with coverage"
 task :test_cov do
-  ENV['COVERAGE'] = '1'
-  sh "#{FileUtils::RUBY} test/rodish_test.rb"
+  sh({'COVERAGE'=>'1'}, "#{FileUtils::RUBY} test/rodish_test.rb")
+end
+
+desc "Run tests with method visibility checking"
+task "test_vis" do
+  sh({'CHECK_METHOD_VISIBILITY'=>'1'}, "#{FileUtils::RUBY} test/rodish_test.rb")
 end
 
 ### RDoc

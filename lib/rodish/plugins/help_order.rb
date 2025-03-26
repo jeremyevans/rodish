@@ -16,7 +16,11 @@ module Rodish
     module HelpOrder
       def self.after_load(app, default_help_order: nil)
         if default_help_order
-          app::DSL::Command.define_method(:default_help_order){default_help_order.dup}
+          app::DSL::Command.class_exec do
+            define_method(:default_help_order){default_help_order.dup}
+            alias_method(:default_help_order, :default_help_order)
+            private(:default_help_order)
+          end
         end
       end
 
