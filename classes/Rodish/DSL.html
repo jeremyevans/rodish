@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Rodish::DSL</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Rodish::DSL
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/rodish/dsl_rb.html">lib/rodish/dsl.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/rodish/plugins/help_order_rb.html">lib/rodish/plugins/help_order.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/rodish/processor_rb.html">lib/rodish/processor.rb</a>
+</li>
+<li>
+<a class='show' href='#' onclick='this.parentNode.parentNode.className += &quot; expanded&quot;; this.parentNode.removeChild(this); return false'>show all</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>The <a href="DSL.html"><code>Rodish::DSL</code></a> class implements Rodish’s <a href="DSL.html"><code>DSL</code></a>.  Blocks passed to <a href="../Rodish.html#method-c-processor"><code>Rodish.processor</code></a> and on/run_on blocks inside those blocks evaluated in the context of an instance of <a href="DSL.html"><code>Rodish::DSL</code></a>.</p>
+
+<p>Each <a href="DSL.html"><code>Rodish::DSL</code></a> instance is bound to a single <a href="Command.html"><code>Rodish::Command</code></a> and allows the <a href="DSL.html"><code>DSL</code></a> to modify the state of the command.</p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-command">command</a></li>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-args">args</a></li>
+<li><a href="#method-i-autoload_subcommand_dir">autoload_subcommand_dir</a></li>
+<li><a href="#method-i-banner">banner</a></li>
+<li><a href="#method-i-desc">desc</a></li>
+<li><a href="#method-i-on">on</a></li>
+<li><a href="#method-i-options">options</a></li>
+<li><a href="#method-i-run">run</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-command'>
+<a name='method-c-command'></a>
+<div class='synopsis'>
+<span class='name'>command</span><span class='arguments'>(command_path, &block)</span>
+
+</div>
+<div class='description'>
+
+<p>Create a new command with the given path and evaluate the given block in the context of a new instance using that command.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-command-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-command-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">19</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">command</span>(<span class="ruby-identifier">command_path</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">20</span>   <span class="ruby-identifier">command</span> = <span class="ruby-keyword">self</span><span class="ruby-operator">::</span><span class="ruby-constant">Command</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">command_path</span>)
+<span class="line-num">21</span>   <span class="ruby-identifier">new</span>(<span class="ruby-identifier">command</span>).<span class="ruby-identifier">instance_exec</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>
+<span class="line-num">22</span>   <span class="ruby-identifier">command</span>
+<span class="line-num">23</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span><span class='arguments'>(command)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">25</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">command</span>)
+<span class="line-num">26</span>   <span class="ruby-ivar">@command</span> = <span class="ruby-identifier">command</span>
+<span class="line-num">27</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-args'>
+<a name='method-i-args'></a>
+<div class='synopsis'>
+<span class='name'>args</span><span class='arguments'>(args)</span>
+
+</div>
+<div class='description'>
+
+<p>Set the number of arguments supported by this command. The default is 0.  To support a fixed number of arguments, pass an Integer.  To support a variable number of arguments, pass a Range.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-args-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-args-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">59</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">args</span>(<span class="ruby-identifier">args</span>)
+<span class="line-num">60</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">num_args</span> = <span class="ruby-identifier">args</span>
+<span class="line-num">61</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-autoload_subcommand_dir'>
+<a name='method-i-autoload_subcommand_dir'></a>
+<div class='synopsis'>
+<span class='name'>autoload_subcommand_dir</span><span class='arguments'>(dir)</span>
+
+</div>
+<div class='description'>
+
+<p>Autoload subcommands from the given directory. Filenames ending in .rb in this directory should be valid subcommands, and requiring the related file should load the subcommand.</p>
+
+<p>You can use this so that your argv parser does not need to load code not needed to support processing the command.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-autoload_subcommand_dir-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-autoload_subcommand_dir-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">69</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">autoload_subcommand_dir</span>(<span class="ruby-identifier">dir</span>)
+<span class="line-num">70</span>   <span class="ruby-identifier">_autoload_subcommand_dir</span>(<span class="ruby-ivar">@command</span>.<span class="ruby-identifier">subcommands</span>, <span class="ruby-identifier">dir</span>)
+<span class="line-num">71</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-banner'>
+<a name='method-i-banner'></a>
+<div class='synopsis'>
+<span class='name'>banner</span><span class='arguments'>(banner)</span>
+
+</div>
+<div class='description'>
+
+<p>Set the banner for the command execution and subcommand usage.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-banner-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-banner-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">35</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">banner</span>(<span class="ruby-identifier">banner</span>)
+<span class="line-num">36</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">banner</span> = <span class="ruby-identifier">banner</span>
+<span class="line-num">37</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-desc'>
+<a name='method-i-desc'></a>
+<div class='synopsis'>
+<span class='name'>desc</span><span class='arguments'>(description)</span>
+
+</div>
+<div class='description'>
+
+<p>Set the description for the command.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-desc-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-desc-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">30</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">desc</span>(<span class="ruby-identifier">description</span>)
+<span class="line-num">31</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">desc</span> = <span class="ruby-identifier">description</span>
+<span class="line-num">32</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-on'>
+<a name='method-i-on'></a>
+<div class='synopsis'>
+<span class='name'>on</span><span class='arguments'>(command_name, &block)</span>
+
+</div>
+<div class='description'>
+
+<p>Create a new subcommand with the given name and yield to the block to configure the subcommand.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-on-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-on-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">75</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">on</span>(<span class="ruby-identifier">command_name</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">76</span>   <span class="ruby-identifier">_on</span>(<span class="ruby-ivar">@command</span>.<span class="ruby-identifier">subcommands</span>, <span class="ruby-identifier">command_name</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">77</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-options'>
+<a name='method-i-options'></a>
+<div class='synopsis'>
+<span class='name'>options</span><span class='arguments'>(banner, key: nil, &block)</span>
+
+</div>
+<div class='description'>
+
+<p>Set the option parser for the command to based on the provided block, which is executed in the context of a new instance of <a href="OptionParser.html"><code>Rodish::OptionParser</code></a>. These options are parsed for execuction of both subcommands and the current command.</p>
+
+<p>The banner argument is required and sets the usage string for the command.</p>
+
+<p>If <code>key</code> is given, parsed options will be placed in a subhash using that key.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-options-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-options-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">49</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">options</span>(<span class="ruby-identifier">banner</span>, <span class="ruby-value">key:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">50</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">banner</span> = <span class="ruby-identifier">banner</span>
+<span class="line-num">51</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">option_key</span> = <span class="ruby-identifier">key</span>
+<span class="line-num">52</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">option_parser</span> = <span class="ruby-identifier">create_option_parser</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">53</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-run'>
+<a name='method-i-run'></a>
+<div class='synopsis'>
+<span class='name'>run</span><span class='arguments'>(&block)</span>
+
+</div>
+<div class='description'>
+
+<p>Set the block to run for subcommand execution.  Commands should have subcommands and/or a run block, otherwise it is not possible to use the command successfully.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-run-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-run-source'>   <span class="ruby-comment"># File lib/rodish/dsl.rb</span>
+<span class="line-num">82</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">run</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">83</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">run_block</span> = <span class="ruby-identifier">block</span>
+<span class="line-num">84</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Rodish::Plugins::Wrap_</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>module</span>
+Rodish::Plugins::Wrap_
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../files/lib/rodish/plugins/_wrap_rb.html">lib/rodish/plugins/_wrap.rb</a>
+</li>
+</ol>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-wrap">wrap</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-wrap'>
+<a name='method-i-wrap'></a>
+<div class='synopsis'>
+<span class='name'>wrap</span><span class='arguments'>(prefix, values, separator: " ", limit: 80)</span>
+
+</div>
+<div class='description'>
+
+<p>Return an array of strings, each no longer than limit, showing the prefix and all values.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-wrap-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-wrap-source'>   <span class="ruby-comment"># File lib/rodish/plugins/_wrap.rb</span>
+<span class="line-num">13</span>        <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">wrap</span>(<span class="ruby-identifier">prefix</span>, <span class="ruby-identifier">values</span>, <span class="ruby-value">separator:</span> <span class="ruby-string">&quot; &quot;</span>, <span class="ruby-value">limit:</span> <span class="ruby-value">80</span>)
+<span class="line-num">14</span>   <span class="ruby-identifier">line</span> = [<span class="ruby-identifier">prefix</span>]
+<span class="line-num">15</span>   <span class="ruby-identifier">lines</span> = [<span class="ruby-identifier">line</span>]
+<span class="line-num">16</span>   <span class="ruby-identifier">prefix_length</span> = <span class="ruby-identifier">length</span> = <span class="ruby-identifier">prefix</span>.<span class="ruby-identifier">length</span>
+<span class="line-num">17</span>   <span class="ruby-identifier">sep_length</span> = <span class="ruby-identifier">separator</span>.<span class="ruby-identifier">length</span>
+<span class="line-num">18</span>   <span class="ruby-identifier">indent</span> = <span class="ruby-string">&quot; &quot;</span> <span class="ruby-operator">*</span> <span class="ruby-identifier">prefix_length</span>
+<span class="line-num">19</span> 
+<span class="line-num">20</span>   <span class="ruby-identifier">values</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+<span class="line-num">21</span>     <span class="ruby-identifier">value</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span>
+<span class="line-num">22</span>     <span class="ruby-identifier">value_length</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">length</span>
+<span class="line-num">23</span>     <span class="ruby-identifier">new_length</span> = <span class="ruby-identifier">sep_length</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">length</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">value_length</span>
+<span class="line-num">24</span>     <span class="ruby-keyword">if</span> <span class="ruby-identifier">new_length</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">limit</span>
+<span class="line-num">25</span>       <span class="ruby-identifier">line</span> = [<span class="ruby-identifier">indent</span>, <span class="ruby-identifier">separator</span>, <span class="ruby-identifier">value</span>]
+<span class="line-num">26</span>       <span class="ruby-identifier">lines</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">line</span>
+<span class="line-num">27</span>       <span class="ruby-identifier">length</span> = <span class="ruby-identifier">prefix_length</span>
+<span class="line-num">28</span>     <span class="ruby-keyword">else</span>
+<span class="line-num">29</span>       <span class="ruby-identifier">line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">separator</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">value</span>
+<span class="line-num">30</span>     <span class="ruby-keyword">end</span>
+<span class="line-num">31</span>     <span class="ruby-identifier">length</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">sep_length</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">value_length</span>
+<span class="line-num">32</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">33</span> 
+<span class="line-num">34</span>   <span class="ruby-identifier">lines</span>.<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">l</span><span class="ruby-operator">|</span> <span class="ruby-identifier">l</span>.<span class="ruby-identifier">join</span>}
+<span class="line-num">35</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

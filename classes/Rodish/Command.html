@@ -1,0 +1,410 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Rodish::Command</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Rodish::Command
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/rodish/command_rb.html">lib/rodish/command.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p><a href="Command.html"><code>Rodish::Command</code></a> is the main object in Rodish’s processing. It handles a single command, and may have one or more subcommands, forming a tree.</p>
+
+<p>Rodish’s argv processing starts with the root command, processing options and deleting appropriately to subcommands, until the requested command or subcommand is located, which is then executed.</p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#attribute-i-banner">banner</a></li>
+<li><a href="#attribute-i-command_path">command_path</a></li>
+<li><a href="#attribute-i-desc">desc</a></li>
+<li><a href="#method-i-each_banner">each_banner</a></li>
+<li><a href="#method-i-each_subcommand">each_subcommand</a></li>
+<li><a href="#method-i-freeze">freeze</a></li>
+<li><a href="#method-i-help">help</a></li>
+<li><a href="#method-i-help_lines">help_lines</a></li>
+<li><a href="#attribute-i-num_args">num_args</a></li>
+<li><a href="#attribute-i-option_key">option_key</a></li>
+<li><a href="#attribute-i-option_parser">option_parser</a></li>
+<li><a href="#method-i-process">process</a></li>
+<li><a href="#method-i-process_command_options">process_command_options</a></li>
+<li><a href="#method-i-raise_failure">raise_failure</a></li>
+<li><a href="#attribute-i-run_block">run_block</a></li>
+<li><a href="#method-i-subcommand">subcommand</a></li>
+<li><a href="#attribute-i-subcommands">subcommands</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='attribute-list'>
+<h2 class='section-bar'>Attributes</h2>
+<div class='name-list'>
+<table>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-banner'>banner</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'>
+<p>A usage banner for the command or subcommands.</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-command_path'>command_path</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'>
+<p>An array of command names that represent a path to the current command.  Empty for the root command.</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-desc'>desc</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'>
+<p>A description for the command</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-num_args'>num_args</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'>
+<p>The number of arguments the run block will accept. Should be either an integer or a range of integers.</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-option_key'>option_key</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'>
+<p>If set, places parsed options in a subhash of the options hash, keyed by the given value.  If nil, parsed options are placed directly in the options hash.</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-option_parser'>option_parser</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'>
+<p>The option parser for the current command.  May be nil, in which case the default option parser is used.</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-run_block'>run_block</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'>
+<p>The block to execute if this command is the requested subcommand.  May be nil if this subcommand cannot be executed, and can only dispatch to subcommands.</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-subcommands'>subcommands</a>
+</td>
+<td class='context-item-value'>[R]</td>
+<td class='context-item-desc'>
+<p>A hash of subcommands for the command.  Keys are subcommand name strings.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span><span class='arguments'>(command_path)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'>   <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">48</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">command_path</span>)
+<span class="line-num">49</span>   <span class="ruby-ivar">@command_path</span> = <span class="ruby-identifier">command_path</span>
+<span class="line-num">50</span>   <span class="ruby-ivar">@command_name</span> = <span class="ruby-identifier">_command_name</span>(<span class="ruby-identifier">command_path</span>)
+<span class="line-num">51</span>   <span class="ruby-ivar">@subcommands</span> = {}
+<span class="line-num">52</span>   <span class="ruby-ivar">@num_args</span> = <span class="ruby-value">0</span>
+<span class="line-num">53</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-each_banner'>
+<a name='method-i-each_banner'></a>
+<div class='synopsis'>
+<span class='name'>each_banner</span><span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Yield each banner string (if any) to the block.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-each_banner-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-each_banner-source'>    <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">117</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_banner</span>
+<span class="line-num">118</span>   <span class="ruby-keyword">yield</span> <span class="ruby-identifier">banner</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">banner</span>
+<span class="line-num">119</span>   <span class="ruby-keyword">nil</span>
+<span class="line-num">120</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-each_subcommand'>
+<a name='method-i-each_subcommand'></a>
+<div class='synopsis'>
+<span class='name'>each_subcommand</span><span class='arguments'>(names = [].freeze, &block)</span>
+
+</div>
+<div class='description'>
+
+<p>This yields the current command and all subcommands, recursively.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-each_subcommand-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-each_subcommand-source'>    <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">111</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">each_subcommand</span>(<span class="ruby-identifier">names</span> = [].<span class="ruby-identifier">freeze</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">112</span>   <span class="ruby-keyword">yield</span> <span class="ruby-identifier">names</span>, <span class="ruby-keyword">self</span>
+<span class="line-num">113</span>   <span class="ruby-identifier">_each_subcommand</span>(<span class="ruby-identifier">names</span>, <span class="ruby-ivar">@subcommands</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">114</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-freeze'>
+<a name='method-i-freeze'></a>
+<div class='synopsis'>
+<span class='name'>freeze</span><span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Freeze all subcommands and option parsers in addition to the command itself.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-freeze-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-freeze-source'>   <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">57</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">freeze</span>
+<span class="line-num">58</span>   <span class="ruby-ivar">@subcommands</span>.<span class="ruby-identifier">each_value</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:freeze</span>)
+<span class="line-num">59</span>   <span class="ruby-ivar">@subcommands</span>.<span class="ruby-identifier">freeze</span>
+<span class="line-num">60</span>   <span class="ruby-ivar">@option_parser</span>.<span class="ruby-identifier">freeze</span>
+<span class="line-num">61</span>   <span class="ruby-keyword">super</span>
+<span class="line-num">62</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-help'>
+<a name='method-i-help'></a>
+<div class='synopsis'>
+<span class='name'>help</span><span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Return a help string for the command.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-help-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-help-source'>   <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">65</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">help</span>
+<span class="line-num">66</span>   <span class="ruby-identifier">help_lines</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;\n&quot;</span>)
+<span class="line-num">67</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-help_lines'>
+<a name='method-i-help_lines'></a>
+<div class='synopsis'>
+<span class='name'>help_lines</span><span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Return an array of help strings for the command.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-help_lines-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-help_lines-source'>   <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">70</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">help_lines</span>
+<span class="line-num">71</span>   <span class="ruby-identifier">output</span> = []
+<span class="line-num">72</span>   <span class="ruby-identifier">help_order</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">type</span><span class="ruby-operator">|</span>
+<span class="line-num">73</span>     <span class="ruby-identifier">send</span>(<span class="ruby-value">:&quot;_help_#{type}&quot;</span>, <span class="ruby-identifier">output</span>)
+<span class="line-num">74</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">75</span>   <span class="ruby-identifier">output</span>
+<span class="line-num">76</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-process'>
+<a name='method-i-process'></a>
+<div class='synopsis'>
+<span class='name'>process</span><span class='arguments'>(context, options, argv)</span>
+
+</div>
+<div class='description'>
+
+<p>Process the current command.  This first processes the options. After processing the options, it checks if the first argument in the remaining argv is a subcommand.  If so, it dispatches to that subcommand.  If not, it dispatches to the run block.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-process-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-process-source'>    <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num"> 87</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process</span>(<span class="ruby-identifier">context</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">argv</span>)
+<span class="line-num"> 88</span>   <span class="ruby-identifier">process_command_options</span>(<span class="ruby-identifier">context</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">argv</span>)
+<span class="line-num"> 89</span> 
+<span class="line-num"> 90</span>   <span class="ruby-identifier">arg</span> = <span class="ruby-identifier">argv</span>[<span class="ruby-value">0</span>]
+<span class="line-num"> 91</span>   <span class="ruby-keyword">if</span> <span class="ruby-identifier">argv</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@subcommands</span>[<span class="ruby-identifier">arg</span>]
+<span class="line-num"> 92</span>     <span class="ruby-identifier">process_subcommand</span>(<span class="ruby-ivar">@subcommands</span>, <span class="ruby-identifier">context</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">argv</span>)
+<span class="line-num"> 93</span>   <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">run_block</span>
+<span class="line-num"> 94</span>     <span class="ruby-keyword">if</span> <span class="ruby-identifier">valid_args?</span>(<span class="ruby-identifier">argv</span>)
+<span class="line-num"> 95</span>       <span class="ruby-keyword">if</span> <span class="ruby-ivar">@num_args</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Integer</span>)
+<span class="line-num"> 96</span>         <span class="ruby-identifier">context</span>.<span class="ruby-identifier">instance_exec</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">argv</span>, <span class="ruby-identifier">options</span>, <span class="ruby-keyword">self</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">run_block</span>)
+<span class="line-num"> 97</span>       <span class="ruby-keyword">else</span>
+<span class="line-num"> 98</span>         <span class="ruby-identifier">context</span>.<span class="ruby-identifier">instance_exec</span>(<span class="ruby-identifier">argv</span>, <span class="ruby-identifier">options</span>, <span class="ruby-keyword">self</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">run_block</span>)
+<span class="line-num"> 99</span>       <span class="ruby-keyword">end</span>
+<span class="line-num">100</span>     <span class="ruby-keyword">else</span>
+<span class="line-num">101</span>       <span class="ruby-identifier">raise_invalid_args_failure</span>(<span class="ruby-identifier">argv</span>)
+<span class="line-num">102</span>     <span class="ruby-keyword">end</span>
+<span class="line-num">103</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">104</span>     <span class="ruby-identifier">process_command_failure</span>(<span class="ruby-identifier">arg</span>, <span class="ruby-ivar">@subcommands</span>, <span class="ruby-string">&quot;&quot;</span>)
+<span class="line-num">105</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">106</span> <span class="ruby-keyword">rescue</span> <span class="ruby-operator">::</span><span class="ruby-constant">OptionParser</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidOption</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+<span class="line-num">107</span>   <span class="ruby-identifier">raise_failure</span>(<span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>)
+<span class="line-num">108</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-process_command_options'>
+<a name='method-i-process_command_options'></a>
+<div class='synopsis'>
+<span class='name'>process_command_options</span><span class='arguments'>(context, options, argv)</span>
+
+</div>
+<div class='description'>
+
+<p>Process options for the command using the option key and parser.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-process_command_options-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-process_command_options-source'>   <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">79</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">process_command_options</span>(<span class="ruby-identifier">context</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">argv</span>)
+<span class="line-num">80</span>   <span class="ruby-identifier">process_options</span>(<span class="ruby-identifier">argv</span>, <span class="ruby-identifier">options</span>, <span class="ruby-ivar">@option_key</span>, <span class="ruby-ivar">@option_parser</span>)
+<span class="line-num">81</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-raise_failure'>
+<a name='method-i-raise_failure'></a>
+<div class='synopsis'>
+<span class='name'>raise_failure</span><span class='arguments'>(message)</span>
+
+</div>
+<div class='description'>
+
+<p>Raise a <a href="CommandFailure.html"><code>CommandFailure</code></a> with the given error and the given option parsers.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-raise_failure-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-raise_failure-source'>    <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">124</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">raise_failure</span>(<span class="ruby-identifier">message</span>)
+<span class="line-num">125</span>   <span class="ruby-identifier">raise</span> <span class="ruby-constant">CommandFailure</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">message</span>, <span class="ruby-keyword">self</span>)
+<span class="line-num">126</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-subcommand'>
+<a name='method-i-subcommand'></a>
+<div class='synopsis'>
+<span class='name'>subcommand</span><span class='arguments'>(name)</span>
+
+</div>
+<div class='description'>
+
+<p>Returns a <a href="Command.html"><code>Command</code></a> instance for the named subcommand. This will autoload the subcommand if not already loaded.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-subcommand-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-subcommand-source'>    <span class="ruby-comment"># File lib/rodish/command.rb</span>
+<span class="line-num">130</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">subcommand</span>(<span class="ruby-identifier">name</span>)
+<span class="line-num">131</span>   <span class="ruby-identifier">_subcommand</span>(<span class="ruby-ivar">@subcommands</span>, <span class="ruby-identifier">name</span>)
+<span class="line-num">132</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+Wed, 26 Mar 2025 12:19:08 -0700
+README.rdoc	Wed, 26 Mar 2025 12:12:42 -0700
+CHANGELOG	Wed, 26 Mar 2025 11:58:24 -0700
+MIT-LICENSE	Wed, 26 Feb 2025 15:36:11 -0800
+lib/rodish.rb	Wed, 12 Mar 2025 16:56:47 -0700
+lib/rodish/command.rb	Wed, 26 Mar 2025 11:58:24 -0700
+lib/rodish/dsl.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/errors.rb	Mon, 10 Mar 2025 14:52:39 -0700
+lib/rodish/option_parser.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/plugins.rb	Wed, 12 Mar 2025 16:56:47 -0700
+lib/rodish/plugins/_context_sensitive_help.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/plugins/_wrap.rb	Wed, 26 Mar 2025 11:58:24 -0700
+lib/rodish/plugins/after_options_hook.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/plugins/cache_help_output.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/plugins/help_examples.rb	Wed, 26 Mar 2025 11:58:24 -0700
+lib/rodish/plugins/help_option_values.rb	Wed, 26 Mar 2025 11:58:24 -0700
+lib/rodish/plugins/help_order.rb	Wed, 26 Mar 2025 11:58:24 -0700
+lib/rodish/plugins/invalid_args_message.rb	Wed, 26 Mar 2025 11:58:24 -0700
+lib/rodish/plugins/is.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/plugins/post_commands.rb	Wed, 26 Mar 2025 11:58:24 -0700
+lib/rodish/plugins/run_is.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/plugins/skip_option_parsing.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/plugins/usages.rb	Wed, 12 Mar 2025 16:56:47 -0700
+lib/rodish/plugins/wrapped_options_separator.rb	Thu, 13 Mar 2025 17:01:44 -0700
+lib/rodish/processor.rb	Wed, 26 Mar 2025 12:00:18 -0700

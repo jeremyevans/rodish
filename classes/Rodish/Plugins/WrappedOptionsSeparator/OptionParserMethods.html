@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Rodish::Plugins::WrappedOptionsSeparator::OptionParserMethods</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>module</span>
+Rodish::Plugins::WrappedOptionsSeparator::OptionParserMethods
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../../files/lib/rodish/plugins/wrapped_options_separator_rb.html">lib/rodish/plugins/wrapped_options_separator.rb</a>
+</li>
+</ol>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-wrap">wrap</a></li>
+</ol>
+</div>
+<div id='context'>
+<div id='includes'>
+<h2>Included modules</h2>
+<ol>
+<li><a href="../Wrap_.html">Wrap_</a></li>
+</ol>
+</div>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-wrap'>
+<a name='method-i-wrap'></a>
+<div class='synopsis'>
+<span class='name'>wrap</span><span class='arguments'>(prefix, values, separator: " ", limit: 80)</span>
+
+</div>
+<div class='description'>
+
+<p>Helper method that takes an array of values, wraps them to the given limit, and adds each line as a separator.  This is useful when you have a large amount of information you want to display and you want to wrap if for display to the user when showing options.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-wrap-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-wrap-source'>   <span class="ruby-comment"># File lib/rodish/plugins/wrapped_options_separator.rb</span>
+<span class="line-num">19</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">wrap</span>(<span class="ruby-identifier">prefix</span>, <span class="ruby-identifier">values</span>, <span class="ruby-value">separator:</span> <span class="ruby-string">&quot; &quot;</span>, <span class="ruby-value">limit:</span> <span class="ruby-value">80</span>)
+<span class="line-num">20</span>   <span class="ruby-keyword">super</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span><span class="ruby-operator">|</span>
+<span class="line-num">21</span>     <span class="ruby-identifier">separator</span> <span class="ruby-identifier">line</span>
+<span class="line-num">22</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">23</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>CHANGELOG</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='file' id='wrapper'>
+<div class='header'>
+<h1 class='name'>CHANGELOG
+</h1>
+<div class='paths'>
+CHANGELOG
+</div>
+<div class='last-update'>
+Last Update:
+<span class='datetime'>2025-03-26 11:58:24 -0700</span>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<h3 id="label-master">master<span><a href="#label-master">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Add methods for user-visible strings in help output and error messages, so they can be overridden by plugins (jeremyevans)</p>
+</li><li>
+<p>Move run_is method to run_is plugin (jeremyevans)</p>
+</li><li>
+<p>Move is method to is plugin (jeremyevans)</p>
+</li><li>
+<p>Move post command handling to the post_commands plugin (jeremyevans)</p>
+</li><li>
+<p>Move invalid_args_message keyword argument handling to invalid_args_message plugin (jeremyevans)</p>
+</li><li>
+<p>Move skip_option_parsing method to skip_option_parsing plugin (jeremyevans)</p>
+</li><li>
+<p>Remove before method, users should switch to after_options_hook plugin (jeremyevans)</p>
+</li><li>
+<p>Move after_options hook to after_options_hook plugin (jeremyevans)</p>
+</li><li>
+<p>Add help_option_values plugin for showing allowed option values (jeremyevans)</p>
+</li><li>
+<p>Move option parser wrap method to wrapped_options_separator plugin (jeremyevans)</p>
+</li><li>
+<p>Move help output caching to cache_help_output plugin (jeremyevans)</p>
+</li><li>
+<p>Add help_order plugin to override the order of command help sections (jeremyevans)</p>
+</li><li>
+<p>Add help_examples plugin supporting showing examples in command help output (jeremyevans)</p>
+</li><li>
+<p>Move usages method to usages plugin (jeremyevans)</p>
+</li><li>
+<p>Allow Processor#on to work with a block and no argument to configure the root command (jeremyevans)</p>
+</li><li>
+<p>Allow <a href="../classes/Rodish.html#method-c-processor"><code>Rodish.processor</code></a> to not require a block (jeremyevans)</p>
+</li><li>
+<p>Implement a plugin system (jeremyevans)</p>
+</li><li>
+<p>Command help is now cached if the command is frozen (jeremyevans)</p>
+</li><li>
+<p>Remove Command#option_{parsers,text}, as Command#help makes the methods unnecessary (jeremyevans)</p>
+</li><li>
+<p>The SkipOptionParser class has been removed as it is no longer needed (jeremyevans)</p>
+</li><li>
+<p>CommandFailure now accepts a command argument instead of an array of option parsers (jeremyevans)</p>
+</li><li>
+<p>Command#process_command_failure private method no longer takes an option parser argument (jeremyevans)</p>
+</li><li>
+<p>OptionParser#subcommands accessor has been removed as it is no longer needed (jeremyevans)</p>
+</li><li>
+<p>Make options/post_options methods require a block (jeremyevans)</p>
+</li><li>
+<p>Add Command#help for getting command help output, switch to using it internally (jeremyevans)</p>
+</li><li>
+<p>Add banner/post_banner for setting banners for commands without creating option parser (jeremyevans)</p>
+</li><li>
+<p>Add desc for setting descriptions for commands (jeremyevans)</p>
+</li></ul>
+
+<h3 id="label-1.1.0+-282025-03-03-29">1.1.0 (2025-03-03)<span><a href="#label-1.1.0+-282025-03-03-29">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Support after_options method for a block called after options processing (jeremyevans)</p>
+</li></ul>
+
+<h3 id="label-1.0.0+-282025-02-27-29">1.0.0 (2025-02-27)<span><a href="#label-1.0.0+-282025-02-27-29">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Initial Public Release</p>
+</li></ul>
+</div>
+<div id='context'>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

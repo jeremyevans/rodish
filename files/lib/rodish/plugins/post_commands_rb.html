@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>post_commands.rb</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='file' id='wrapper'>
+<div class='header'>
+<h1 class='name'>post_commands.rb
+</h1>
+<div class='paths'>
+lib/rodish/plugins/post_commands.rb
+</div>
+<div class='last-update'>
+Last Update:
+<span class='datetime'>2025-03-26 11:58:24 -0700</span>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>The post_commands plugin supports subcommands after arguments, instead of requiring subcommands before arguments.  You can use Command#run to dispatch to post subcommands inside the Command’s run block.</p>
+
+<pre class="ruby"><span class="ruby-identifier">run</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">argv</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">command</span><span class="ruby-operator">|</span>
+  <span class="ruby-ivar">@something</span> = <span class="ruby-identifier">argv</span>.<span class="ruby-identifier">shift</span>
+  <span class="ruby-identifier">command</span>.<span class="ruby-identifier">run</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">argv</span>)
+<span class="ruby-keyword">end</span>
+</pre>
+</div>
+<div id='context'>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

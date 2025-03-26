@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Rodish::Plugins::Usages::ProcessorMethods</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>module</span>
+Rodish::Plugins::Usages::ProcessorMethods
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../../files/lib/rodish/plugins/usages_rb.html">lib/rodish/plugins/usages.rb</a>
+</li>
+</ol>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-usages">usages</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-usages'>
+<a name='method-i-usages'></a>
+<div class='synopsis'>
+<span class='name'>usages</span><span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Return a hash of usage strings for the root command and all subcommands, recursively.  The hash has string keys for the command name, and string values for the help for the command.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-usages-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-usages-source'>   <span class="ruby-comment"># File lib/rodish/plugins/usages.rb</span>
+<span class="line-num">15</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">usages</span>
+<span class="line-num">16</span>   <span class="ruby-identifier">usages</span> = {}
+<span class="line-num">17</span> 
+<span class="line-num">18</span>   <span class="ruby-identifier">command</span>.<span class="ruby-identifier">each_subcommand</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">names</span>, <span class="ruby-identifier">command</span><span class="ruby-operator">|</span>
+<span class="line-num">19</span>     <span class="ruby-identifier">usages</span>[<span class="ruby-identifier">names</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot; &quot;</span>)] = <span class="ruby-identifier">command</span>.<span class="ruby-identifier">help</span>
+<span class="line-num">20</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">21</span> 
+<span class="line-num">22</span>   <span class="ruby-identifier">usages</span>
+<span class="line-num">23</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

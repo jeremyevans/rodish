@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Rodish::Plugins::PostCommands::DSLMethods</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>module</span>
+Rodish::Plugins::PostCommands::DSLMethods
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../../files/lib/rodish/plugins/post_commands_rb.html">lib/rodish/plugins/post_commands.rb</a>
+</li>
+</ol>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-autoload_post_subcommand_dir">autoload_post_subcommand_dir</a></li>
+<li><a href="#method-i-post_banner">post_banner</a></li>
+<li><a href="#method-i-post_options">post_options</a></li>
+<li><a href="#method-i-run_on">run_on</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-autoload_post_subcommand_dir'>
+<a name='method-i-autoload_post_subcommand_dir'></a>
+<div class='synopsis'>
+<span class='name'>autoload_post_subcommand_dir</span><span class='arguments'>(dir)</span>
+
+</div>
+<div class='description'>
+
+<p>Similar to <code>autoload_subcommand_dir</code>, but for post subcommands instead of normal subcommands.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-autoload_post_subcommand_dir-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-autoload_post_subcommand_dir-source'>   <span class="ruby-comment"># File lib/rodish/plugins/post_commands.rb</span>
+<span class="line-num">40</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">autoload_post_subcommand_dir</span>(<span class="ruby-identifier">dir</span>)
+<span class="line-num">41</span>   <span class="ruby-identifier">_autoload_subcommand_dir</span>(<span class="ruby-ivar">@command</span>.<span class="ruby-identifier">post_subcommands</span>, <span class="ruby-identifier">dir</span>)
+<span class="line-num">42</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-post_banner'>
+<a name='method-i-post_banner'></a>
+<div class='synopsis'>
+<span class='name'>post_banner</span><span class='arguments'>(banner)</span>
+
+</div>
+<div class='description'>
+
+<p>Set the banner for post subcommand usage.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-post_banner-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-post_banner-source'>   <span class="ruby-comment"># File lib/rodish/plugins/post_commands.rb</span>
+<span class="line-num">25</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">post_banner</span>(<span class="ruby-identifier">banner</span>)
+<span class="line-num">26</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">post_banner</span> = <span class="ruby-identifier">banner</span>
+<span class="line-num">27</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-post_options'>
+<a name='method-i-post_options'></a>
+<div class='synopsis'>
+<span class='name'>post_options</span><span class='arguments'>(banner, key: nil, &block)</span>
+
+</div>
+<div class='description'>
+
+<p>Similar to <code>options</code>, but sets the option parser for post subcommands.  This option parser is only used when the command is executed and chooses to run a post subcommand.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-post_options-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-post_options-source'>   <span class="ruby-comment"># File lib/rodish/plugins/post_commands.rb</span>
+<span class="line-num">32</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">post_options</span>(<span class="ruby-identifier">banner</span>, <span class="ruby-value">key:</span> <span class="ruby-keyword">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">33</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">post_banner</span> = <span class="ruby-identifier">banner</span>
+<span class="line-num">34</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">post_option_key</span> = <span class="ruby-identifier">key</span>
+<span class="line-num">35</span>   <span class="ruby-ivar">@command</span>.<span class="ruby-identifier">post_option_parser</span> = <span class="ruby-identifier">create_option_parser</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">36</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-run_on'>
+<a name='method-i-run_on'></a>
+<div class='synopsis'>
+<span class='name'>run_on</span><span class='arguments'>(command_name, &block)</span>
+
+</div>
+<div class='description'>
+
+<p>Same as <code>on</code>, but for post subcommands instead of normal subcommands.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-run_on-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-run_on-source'>   <span class="ruby-comment"># File lib/rodish/plugins/post_commands.rb</span>
+<span class="line-num">46</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">run_on</span>(<span class="ruby-identifier">command_name</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">47</span>   <span class="ruby-identifier">_on</span>(<span class="ruby-ivar">@command</span>.<span class="ruby-identifier">post_subcommands</span>, <span class="ruby-identifier">command_name</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">48</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

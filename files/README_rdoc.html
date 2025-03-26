@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>README.rdoc</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='file' id='wrapper'>
+<div class='header'>
+<h1 class='name'>README.rdoc
+</h1>
+<div class='paths'>
+README.rdoc
+</div>
+<div class='last-update'>
+Last Update:
+<span class='datetime'>2025-03-26 12:12:42 -0700</span>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<h1 id="label-Rodish"><a href="../classes/Rodish.html"><code>Rodish</code></a><span><a href="#label-Rodish">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="../classes/Rodish.html"><code>Rodish</code></a> parses an argv array using a routing tree approach. It is designed to make it easy to implement command line applications that support multiple levels of subcommands, with options at each level.</p>
+
+<h1 id="label-Installation">Installation<span><a href="#label-Installation">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<pre class="ruby"><span class="ruby-identifier">gem</span> <span class="ruby-identifier">install</span> <span class="ruby-identifier">rodish</span>
+</pre>
+
+<h1 id="label-Source+Code">Source Code<span><a href="#label-Source+Code">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Source code is available on GitHub at <a target="_top" href="https://github.com/jeremyevans/rodish">github.com/jeremyevans/rodish</a></p>
+
+<h1 id="label-Simple+Example">Simple Example<span><a href="#label-Simple+Example">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Here’s a simple commented example with a single subcommand:</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;rodish&quot;</span>
+
+<span class="ruby-comment"># This just creates a normal Ruby class.  For each argv parse, Rodish will</span>
+<span class="ruby-comment"># create an instance of this class</span>
+<span class="ruby-keyword">class</span> <span class="ruby-constant">CliExample</span>
+
+  <span class="ruby-comment"># This allows instances of the class to be instantiated with or without</span>
+  <span class="ruby-comment"># a default person.</span>
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">default_person</span>=<span class="ruby-keyword">nil</span>)
+    <span class="ruby-ivar">@default_person</span> = <span class="ruby-identifier">default_person</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># This installs the Rodish processor into CliExample. It extends the</span>
+  <span class="ruby-comment"># CliExample class with the Rodish::Processor module.</span>
+  <span class="ruby-constant">Rodish</span>.<span class="ruby-identifier">processor</span>(<span class="ruby-keyword">self</span>)
+
+  <span class="ruby-comment"># Without arguments, the on method configures the root command for</span>
+  <span class="ruby-comment"># the processor.</span>
+  <span class="ruby-identifier">on</span> <span class="ruby-keyword">do</span>
+
+    <span class="ruby-comment"># Provide description for root command</span>
+    <span class="ruby-identifier">desc</span> <span class="ruby-string">&quot;Example Hello World CLI&quot;</span>
+
+    <span class="ruby-comment"># This method call creates a hello subcommand of the current/root command.</span>
+    <span class="ruby-identifier">on</span> <span class="ruby-string">&quot;hello&quot;</span> <span class="ruby-keyword">do</span>
+
+      <span class="ruby-comment"># Provide description for this subcommand</span>
+      <span class="ruby-identifier">desc</span> <span class="ruby-string">&quot;Says hello to person or world&quot;</span>
+
+      <span class="ruby-comment"># This adds a usage string and a -p options for the hello subcommand.</span>
+      <span class="ruby-comment"># The block passed is used to set the options via the optparse library.</span>
+      <span class="ruby-identifier">options</span>(<span class="ruby-string">&quot;cli-example hello [options]&quot;</span>) <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;-p&quot;</span>, <span class="ruby-string">&quot;--person=name&quot;</span>, <span class="ruby-string">&quot;say hello to a specific person&quot;</span>)
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># If the given argv is for the hello subcommand, this block will be</span>
+      <span class="ruby-comment"># executed in the context of the CliExample instance.</span>
+      <span class="ruby-identifier">run</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">opts</span><span class="ruby-operator">|</span>
+        <span class="ruby-node">&quot;Hello #{opts[:person] || @default_person || &#39;World&#39;}&quot;</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-comment"># This requests Rodish to process the provided argv.  Rodish will determine</span>
+<span class="ruby-comment"># the related command block to execute and execute it.  The return value of</span>
+<span class="ruby-comment"># that block will be returned to the caller.</span>
+<span class="ruby-constant">CliExample</span>.<span class="ruby-identifier">process</span>([<span class="ruby-string">&quot;hello&quot;</span>])
+<span class="ruby-comment"># =&gt; &quot;Hello World&quot;</span>
+
+<span class="ruby-comment"># Additional arguments passed to .process are passed to .new.  In this</span>
+<span class="ruby-comment"># example, this sets the default person.</span>
+<span class="ruby-constant">CliExample</span>.<span class="ruby-identifier">process</span>([<span class="ruby-string">&quot;hello&quot;</span>], <span class="ruby-string">&quot;Adol&quot;</span>)
+<span class="ruby-comment"># =&gt; &quot;Hello Adol&quot;</span>
+
+<span class="ruby-comment"># This shows an example of passing an option to a subcommand, and using</span>
+<span class="ruby-comment"># the option value when returning a response.</span>
+<span class="ruby-constant">CliExample</span>.<span class="ruby-identifier">process</span>([<span class="ruby-string">&quot;hello&quot;</span>, <span class="ruby-string">&quot;-p&quot;</span>, <span class="ruby-string">&quot;Feena&quot;</span>], <span class="ruby-string">&quot;Adol&quot;</span>)
+<span class="ruby-comment"># =&gt; &quot;Hello Feena&quot;</span>
+</pre>
+
+<h1 id="label-Rodish+DSL"><a href="../classes/Rodish.html"><code>Rodish</code></a> DSL<span><a href="#label-Rodish+DSL">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Inside the <code>on</code> block with no arguments, you are in the context of the root command. The following methods are available for configuring the processing of the command.</p>
+
+<h2 id="label-on"><code>on</code><span><a href="#label-on">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>on</code> method adds a subcommand of the current command, and yields to the block to configure the subcommand.  All of the methods described in the <a href="../classes/Rodish.html"><code>Rodish</code></a> DSL section can be executed inside the <code>on</code> block, and arbitrary levels of subcommands are supported.</p>
+
+<h2 id="label-desc"><code>desc</code><span><a href="#label-desc">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Provides a description for the command.  This description will show up in the help output for the command.</p>
+
+<h2 id="label-options"><code>options</code><span><a href="#label-options">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>options</code> method sets up an options parser for the current command.  The default options parser disallows any options. Options are parsed into a hash, which is yielded to commands (as in the above example).</p>
+
+<p>This method requires a String argument for the usage for the current command. You can also provide a <code>key</code> keyword argument, to put parsed options into a subhash of the main options hash, which can be useful when options are parsed at multiple levels.</p>
+
+<p>A block must be provided, which is executed in the context of a <a href="../classes/Rodish/OptionParser.html"><code>Rodish::OptionParser</code></a> instance.  <a href="../classes/Rodish/OptionParser.html"><code>Rodish::OptionParser</code></a> is a subclass of Ruby’s standard OptionParser (from <code>optparse</code>), with a few additional methods.</p>
+
+<h2 id="label-banner"><code>banner</code><span><a href="#label-banner">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Set the usage banner for the command, without allowing options for the command.</p>
+
+<h2 id="label-args"><code>args</code><span><a href="#label-args">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>args</code> method sets the number of arguments accepted when running the command. The default for <code>args</code> is <code>0</code>. You can provide either an Integer to accept a fixed number of arguments, or a Range to allow any number of arguments in that range.</p>
+
+<h2 id="label-run"><code>run</code><span><a href="#label-run">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>run</code> method sets the block to run for the current command.  If the command accepts a fixed number of arguments, those arguments are yielded as the first arguments to the command.  If the command accepts a range of argument numbers, then the remaining argv array will be passed as the first argument.</p>
+
+<p>The block will be passed two additional arguments, the options already parsed, and the current <a href="../classes/Rodish/Command.html"><code>Rodish::Command</code></a> object.</p>
+
+<h2 id="label-autoload_subcommand_dir"><code>autoload_subcommand_dir</code><span><a href="#label-autoload_subcommand_dir">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>autoload_subcommand_dir</code> takes a directory, and will autoload subcommands from the given directory.  Filenames ending in <code>.rb</code> in this directory will be treated as subcommands, and requiring the file should add the appropriate subcommand.</p>
+
+<p>This allows you to design complex command line programs where only the parts of the program needed to handle the given argv are loaded.</p>
+
+<h1 id="label-Object+Model">Object Model<span><a href="#label-Object+Model">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="../classes/Rodish.html"><code>Rodish</code></a> has four main classes/modules:</p>
+<table class="rdoc-list note-list"><tbody><tr><td class='label'><a href="../classes/Rodish/Processor.html"><code>Rodish::Processor</code></a> </td><td>
+<p>This is the module that extends the class you load <a href="../classes/Rodish.html"><code>Rodish</code></a> into. The class becomes a <a href="../classes/Rodish.html"><code>Rodish</code></a> processor, and contains a reference to the root command for the processor.</p>
+</td></tr><tr><td class='label'><a href="../classes/Rodish/Command.html"><code>Rodish::Command</code></a> </td><td>
+<p>Handles processing the argv.  Contains references to subcommands, similar to a tree.</p>
+</td></tr><tr><td class='label'><a href="../classes/Rodish/DSL.html"><code>Rodish::DSL</code></a> </td><td>
+<p>Used for configuring the <a href="../classes/Rodish/Command.html"><code>Rodish::Command</code></a> instances.</p>
+</td></tr><tr><td class='label'><a href="../classes/Rodish/OptionParser.html"><code>Rodish::OptionParser</code></a> </td><td>
+<p>A subclass of Ruby’s standard OptionParser, used for parsing options for commands.</p>
+</td></tr></tbody></table>
+
+<p>Each <a href="../classes/Rodish.html"><code>Rodish</code></a> processor has a separate subclass of Command, DSL, and OptionParser.</p>
+
+<h1 id="label-Plugins">Plugins<span><a href="#label-Plugins">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>After installing <a href="../classes/Rodish.html"><code>Rodish</code></a> into a processor, the plugin method can be used to load plugins into the processor. Plugins can change how the processor and related command, DSL, and option parsers work.  Each plugin is a module that can contain one or more of the following submodules:</p>
+<table class="rdoc-list note-list"><tbody><tr><td class='label'><code>ProcessorMethods</code> </td><td>
+<p>Extends the processor with additional methods</p>
+</td></tr><tr><td class='label'><code>CommandMethods</code> </td><td>
+<p>Module that is included in the Command subclass for the processor.</p>
+</td></tr><tr><td class='label'><code>DSLMethods</code> </td><td>
+<p>Module that is included in the DSL subclass for the processor.</p>
+</td></tr><tr><td class='label'><code>OptionParserMethods</code> </td><td>
+<p>Module that is included in the OptionParser subclass for the processor.</p>
+</td></tr></tbody></table>
+
+<p>Plugins can also implement singleton <code>before_load</code> and/or <code>after_load</code> methods, which are called before or after loading the plugin modules, respectively.</p>
+
+<p>When loading plugins, you can pass the module instance directly:</p>
+
+<pre class="ruby"><span class="ruby-keyword">class</span> <span class="ruby-constant">App</span>
+  <span class="ruby-constant">Rodish</span>.<span class="ruby-identifier">processor</span>(<span class="ruby-keyword">self</span>)
+  <span class="ruby-identifier">plugin</span> <span class="ruby-constant">PluginModule</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>However, the typical usage is passing a symbol for the plugin:</p>
+
+<pre class="ruby"><span class="ruby-keyword">class</span> <span class="ruby-constant">App</span>
+  <span class="ruby-constant">Rodish</span>.<span class="ruby-identifier">processor</span>(<span class="ruby-keyword">self</span>)
+  <span class="ruby-identifier">plugin</span> <span class="ruby-value">:plugin_name</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>If the plugin has not already been registered, <a href="../classes/Rodish.html"><code>Rodish</code></a> will require the <code>rodish/plugins/plugin_name</code> file, which should register the plugin. See plugins that ship with <a href="../classes/Rodish.html"><code>Rodish</code></a> for an example of how to create a plugin.</p>
+
+<p>The following plugins ship with Rodish:</p>
+<table class="rdoc-list note-list"><tbody><tr><td class='label'>cache_help_output </td><td>
+<p>Cache help output when freezing command.</p>
+</td></tr><tr><td class='label'>help_examples </td><td>
+<p>Allow including example help output with command usage.</p>
+</td></tr><tr><td class='label'>help_option_values </td><td>
+<p>Allow showing allowed option values for help options.</p>
+</td></tr><tr><td class='label'>help_order </td><td>
+<p>Support overriding order of command help sections.</p>
+</td></tr><tr><td class='label'>invalid_args_message </td><td>
+<p>Support overriding the message shown when an invalid number of arguments is provided.</p>
+</td></tr><tr><td class='label'>is </td><td>
+<p>Adds <code>is</code> method as a shortcut for creating a subcommand with <code>on</code> and <code>run</code>.</p>
+</td></tr><tr><td class='label'>post_commands </td><td>
+<p>Adds support for subcommands that appear after arguments (see below).</p>
+</td></tr><tr><td class='label'>run_is </td><td>
+<p>Adds <code>run_is</code> method as a shortcut for creating a post subcommand with  <code>run_on</code> and <code>run</code>.</p>
+</td></tr><tr><td class='label'>skip_option_parsing </td><td>
+<p>Allows for skipping option parsing, treating all elements of argv as arguments.</p>
+</td></tr><tr><td class='label'>usages </td><td>
+<p>Get a hash with help output for all commands/subcommands for the processor.</p>
+</td></tr><tr><td class='label'>wrap_options_separator </td><td>
+<p>Add wrap method to options parser, for wrapping long separator lines</p>
+</td></tr></tbody></table>
+
+<h1 id="label-Post+Commands">Post Commands<span><a href="#label-Post+Commands">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>The post_commands plugin adds support for commands that appear after arguments. It adds the following configuration methods:</p>
+
+<h2 id="label-run_on"><code>run_on</code><span><a href="#label-run_on">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>run_on</code> method is similar to <code>on</code>, except it creates a post subcommand instead of a normal subcommand.  Post subcommands allow the <code>run</code> block to parse part of the remaining argv array, and then call a subcommand with the modified (or a new) argv array.  You dispatch to post subcommands inside the <code>run</code> block by calling <code>run</code> on the command argument:</p>
+
+<pre class="ruby"><span class="ruby-identifier">on</span> <span class="ruby-string">&quot;hello&quot;</span> <span class="ruby-keyword">do</span>
+  <span class="ruby-identifier">args</span>(<span class="ruby-value">2</span><span class="ruby-operator">...</span>)
+
+  <span class="ruby-identifier">run</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">argv</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">command</span><span class="ruby-operator">|</span>
+    <span class="ruby-ivar">@name</span> = <span class="ruby-identifier">argv</span>.<span class="ruby-identifier">shift</span>
+    <span class="ruby-identifier">command</span>.<span class="ruby-identifier">run</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">argv</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">run_on</span> <span class="ruby-string">&quot;world&quot;</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">run</span> <span class="ruby-keyword">do</span>
+      <span class="ruby-node">&quot;Hello #{@name.upcase} World!&quot;</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-comment"># process(%w[hello foo world])</span>
+<span class="ruby-comment"># =&gt; &quot;Hello FOO World!&quot;</span>
+</pre>
+
+<h2 id="label-post_options"><code>post_options</code><span><a href="#label-post_options">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>post_options</code> method sets an option parser that is used for post subcommands. This parses options from the argv array that passed to <code>command.run</code>, before calling the related subcommand. Example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">on</span> <span class="ruby-string">&quot;hello&quot;</span> <span class="ruby-keyword">do</span>
+  <span class="ruby-identifier">args</span>(<span class="ruby-value">2</span><span class="ruby-operator">...</span>)
+
+  <span class="ruby-identifier">post_options</span>(<span class="ruby-string">&quot;Usage: hello name [options] subcommand ...&quot;</span>) <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;-c&quot;</span>, <span class="ruby-string">&quot;--cap&quot;</span>, <span class="ruby-string">&quot;capitalize instead of uppercase&quot;</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">run</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">argv</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">command</span><span class="ruby-operator">|</span>
+    <span class="ruby-ivar">@name</span> = <span class="ruby-identifier">argv</span>.<span class="ruby-identifier">shift</span>
+    <span class="ruby-identifier">command</span>.<span class="ruby-identifier">run</span>(<span class="ruby-keyword">self</span>, <span class="ruby-identifier">opts</span>, <span class="ruby-identifier">argv</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">run_is</span> <span class="ruby-string">&quot;world&quot;</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">opts</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">name</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-value">:cap</span>] <span class="ruby-operator">?</span> <span class="ruby-ivar">@name</span>.<span class="ruby-identifier">capitalize</span> <span class="ruby-operator">:</span>  <span class="ruby-ivar">@name</span>.<span class="ruby-identifier">upcase</span>
+    <span class="ruby-node">&quot;Hello #{name} World!&quot;</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-comment"># process(%w[hello foo world])</span>
+<span class="ruby-comment"># =&gt; &quot;Hello FOO World!&quot;</span>
+<span class="ruby-comment"># process(%w[hello foo -c world])</span>
+<span class="ruby-comment"># =&gt; &quot;Hello Foo World!&quot;</span>
+</pre>
+
+<h2 id="label-post_banner"><code>post_banner</code><span><a href="#label-post_banner">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Set the usage banner for using post subcommands with the command, without allowing post options for the command.</p>
+
+<h2 id="label-autoload_post_subcommand_dir"><code>autoload_post_subcommand_dir</code><span><a href="#label-autoload_post_subcommand_dir">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>The <code>autoload_post_subcommand_dir</code> operates the same as <code>autoload_subcommand_dir</code>, but it handles post subcommands instead of normal subcommands.</p>
+
+<h1 id="label-Examples">Examples<span><a href="#label-Examples">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>The tests that ship with <a href="../classes/Rodish.html"><code>Rodish</code></a> fully cover all of Rodish’s functionality.</p>
+
+<p>If you would like to view a production example using <a href="../classes/Rodish.html"><code>Rodish</code></a>, which uses most of Rodish’s features, please see UbiCli, which is part of Ubicloud:</p>
+<ul><li>
+<p>Main class: <a target="_top" href="https://github.com/ubicloud/ubicloud/blob/main/lib/ubi_cli.rb">github.com/ubicloud/ubicloud/blob/main/lib/ubi_cli.rb</a></p>
+</li><li>
+<p>Commands (separate command per file): <a target="_top" href="https://github.com/ubicloud/ubicloud/tree/main/cli-commands">github.com/ubicloud/ubicloud/tree/main/cli-commands</a></p>
+</li></ul>
+
+<h1 id="label-History">History<span><a href="#label-History">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p><a href="../classes/Rodish.html"><code>Rodish</code></a> was extracted from Ubicloud (<a target="_top" href="https://github.com/ubicloud/ubicloud">github.com/ubicloud/ubicloud</a>), and is the argv processor used in Ubicloud’s command line interface.</p>
+
+<h1 id="label-Naming">Naming<span><a href="#label-Naming">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>The name <a href="../classes/Rodish.html"><code>Rodish</code></a> was chosen because <a href="../classes/Rodish.html"><code>Rodish</code></a> uses an API similar (-ish) to the Roda web framework (<a target="_top" href="http://roda.jeremyevans.net">roda.jeremyevans.net</a>), and the library is designed for use in applications executed from a shell (sh).</p>
+
+<h1 id="label-License">License<span><a href="#label-License">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>MIT</p>
+
+<h1 id="label-Author">Author<span><a href="#label-Author">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Jeremy Evans &lt;code@jeremyevans.net&gt;</p>
+</div>
+<div id='context'>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>

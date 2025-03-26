@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Rodish</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>module</span>
+Rodish
+</h1>
+<ol class='paths'>
+<li>
+<a href="../files/lib/rodish_rb.html">lib/rodish.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/command_rb.html">lib/rodish/command.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/dsl_rb.html">lib/rodish/dsl.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/errors_rb.html">lib/rodish/errors.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/option_parser_rb.html">lib/rodish/option_parser.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins_rb.html">lib/rodish/plugins.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/_context_sensitive_help_rb.html">lib/rodish/plugins/_context_sensitive_help.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/_wrap_rb.html">lib/rodish/plugins/_wrap.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/after_options_hook_rb.html">lib/rodish/plugins/after_options_hook.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/cache_help_output_rb.html">lib/rodish/plugins/cache_help_output.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/help_examples_rb.html">lib/rodish/plugins/help_examples.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/help_option_values_rb.html">lib/rodish/plugins/help_option_values.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/help_order_rb.html">lib/rodish/plugins/help_order.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/invalid_args_message_rb.html">lib/rodish/plugins/invalid_args_message.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/is_rb.html">lib/rodish/plugins/is.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/post_commands_rb.html">lib/rodish/plugins/post_commands.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/run_is_rb.html">lib/rodish/plugins/run_is.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/skip_option_parsing_rb.html">lib/rodish/plugins/skip_option_parsing.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/usages_rb.html">lib/rodish/plugins/usages.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/plugins/wrapped_options_separator_rb.html">lib/rodish/plugins/wrapped_options_separator.rb</a>
+</li>
+<li class='other'>
+<a href="../files/lib/rodish/processor_rb.html">lib/rodish/processor.rb</a>
+</li>
+<li>
+<a class='show' href='#' onclick='this.parentNode.parentNode.className += &quot; expanded&quot;; this.parentNode.removeChild(this); return false'>show all</a>
+</li>
+</ol>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-processor">processor</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='class-list'>
+<h2>Classes and Modules</h2>
+<ol>
+<li><a href="Rodish/Plugins.html">Rodish::Plugins</a></li>
+<li><a href="Rodish/Processor.html">Rodish::Processor</a></li>
+<li><a href="Rodish/Command.html">Rodish::Command</a></li>
+<li><a href="Rodish/CommandExit.html">Rodish::CommandExit</a></li>
+<li><a href="Rodish/CommandFailure.html">Rodish::CommandFailure</a></li>
+<li><a href="Rodish/DSL.html">Rodish::DSL</a></li>
+<li><a href="Rodish/OptionParser.html">Rodish::OptionParser</a></li>
+<li><a href="Rodish/ProgramBug.html">Rodish::ProgramBug</a></li>
+</ol>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-processor'>
+<a name='method-c-processor'></a>
+<div class='synopsis'>
+<span class='name'>processor</span><span class='arguments'>(klass, &block)</span>
+
+</div>
+<div class='description'>
+
+<p>Install a <a href="Rodish.html"><code>Rodish</code></a> processor in the given class. This extends the class with <a href="Rodish/Processor.html"><code>Rodish::Processor</code></a>, and uses the block to configure the processor using <a href="Rodish/DSL.html"><code>Rodish::DSL</code></a>.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-processor-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-processor-source'>   <span class="ruby-comment"># File lib/rodish.rb</span>
+<span class="line-num">10</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">processor</span>(<span class="ruby-identifier">klass</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+<span class="line-num">11</span>   <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">extend</span>(<span class="ruby-constant">Processor</span>)
+<span class="line-num">12</span> 
+<span class="line-num">13</span>   <span class="ruby-identifier">dsl_class</span> = <span class="ruby-constant">Class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">DSL</span>)
+<span class="line-num">14</span>   <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">const_set</span>(<span class="ruby-value">:DSL</span>, <span class="ruby-identifier">dsl_class</span>)
+<span class="line-num">15</span> 
+<span class="line-num">16</span>   <span class="ruby-identifier">command_class</span> = <span class="ruby-constant">Class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Command</span>)
+<span class="line-num">17</span>   <span class="ruby-identifier">dsl_class</span>.<span class="ruby-identifier">const_set</span>(<span class="ruby-value">:Command</span>, <span class="ruby-identifier">command_class</span>)
+<span class="line-num">18</span> 
+<span class="line-num">19</span>   <span class="ruby-identifier">option_parser_class</span> = <span class="ruby-constant">Class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">OptionParser</span>)
+<span class="line-num">20</span>   <span class="ruby-identifier">dsl_class</span>.<span class="ruby-identifier">const_set</span>(<span class="ruby-value">:OptionParser</span>, <span class="ruby-identifier">option_parser_class</span>)
+<span class="line-num">21</span> 
+<span class="line-num">22</span>   <span class="ruby-identifier">option_parser</span> = <span class="ruby-identifier">option_parser_class</span>.<span class="ruby-identifier">new</span>
+<span class="line-num">23</span>   <span class="ruby-identifier">option_parser</span>.<span class="ruby-identifier">set_banner</span>(<span class="ruby-string">&quot;&quot;</span>)
+<span class="line-num">24</span>   <span class="ruby-identifier">option_parser</span>.<span class="ruby-identifier">freeze</span>
+<span class="line-num">25</span>   <span class="ruby-identifier">command_class</span>.<span class="ruby-identifier">const_set</span>(<span class="ruby-value">:DEFAULT_OPTION_PARSER</span>, <span class="ruby-identifier">option_parser</span>)
+<span class="line-num">26</span> 
+<span class="line-num">27</span>   <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">instance_variable_set</span>(<span class="ruby-value">:@command</span>, <span class="ruby-identifier">dsl_class</span>.<span class="ruby-identifier">command</span>([].<span class="ruby-identifier">freeze</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>))
+<span class="line-num">28</span>   <span class="ruby-identifier">klass</span>
+<span class="line-num">29</span> <span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/jeremyevans/hanna"><strong>Hanna</strong> RDoc template</a>
+</div>
+</body>
+</html>
