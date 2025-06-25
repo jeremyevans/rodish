@@ -1,4 +1,4 @@
-=== master
+=== 2.0.1 (2025-06-25)
 
 * Rescue OptionParser::ParseError instead of OptionParser::InvalidOption, fixing handling of invalid option arguments (jeremyevans)
 
