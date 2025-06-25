@@ -89,7 +89,7 @@ module Rodish
         def run(context, options, argv)
           begin
             process_options(argv, options, @post_option_key, @post_option_parser)
-          rescue ::OptionParser::InvalidOption => e
+          rescue ::OptionParser::ParseError => e
             raise CommandFailure.new(e.message, self)
           end
 

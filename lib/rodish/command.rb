@@ -103,7 +103,7 @@ module Rodish
       else
         process_command_failure(arg, @subcommands, "")
       end
-    rescue ::OptionParser::InvalidOption => e
+    rescue ::OptionParser::ParseError => e
       raise_failure(e.message)
     end
 

@@ -1,3 +1,7 @@
+=== master
+
+* Rescue OptionParser::ParseError instead of OptionParser::InvalidOption, fixing handling of invalid option arguments (jeremyevans)
+
 === 2.0.0 (2025-03-26)
 
 * Add methods for user-visible strings in help output and error messages, so they can be overridden by plugins (jeremyevans)

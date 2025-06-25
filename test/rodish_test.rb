@@ -693,6 +693,16 @@ end
         res.must_equal []
       end
 
+      it "raises CommandFailure for unexpected option values" do
+        app.on("z") do
+          options("banner") do
+            on("-f=f", Integer, "sets f")
+          end
+        end
+        proc{app.process(%w[z -f a])}.must_raise(Rodish::CommandFailure).message.must_equal("invalid argument: -f a")
+        res.must_be_empty
+      end
+
       it "CommandFailure#message_with_usage handles cases where no command is present" do
         proc{raise Rodish::CommandFailure, "foo"}.must_raise(Rodish::CommandFailure).message_with_usage.must_equal("foo")
       end
